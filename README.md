@@ -16,8 +16,11 @@ Unity Hub will detect the version (shown in small gray text).
 
 If you don’t have that version installed, click “Install this version”
 
+To update to most recent version:
 
-To push changes, make sure the most recent version is pulled, then run the followin commands:
+`git pull`
+
+To push changes, make sure the most recent version is pulled, then run the following commands:
 
 `git add .`
 
