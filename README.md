@@ -15,3 +15,15 @@ Select the cloned folder.
 Unity Hub will detect the version (shown in small gray text).
 
 If you don’t have that version installed, click “Install this version”
+
+To update to most recent version:
+
+`git pull`
+
+To push changes, make sure the most recent version is pulled, then run the following commands:
+
+`git add .`
+
+`git commit -m "message"`
+
+`git push`
