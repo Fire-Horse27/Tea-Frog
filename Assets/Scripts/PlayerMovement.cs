@@ -26,7 +26,11 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Collision")]
     public LayerMask obstacleMask;
-    public float obstacleCastPadding = 0.02f;
+    public float obstacleCastPadding = 0.01f;
+
+    [Header("Movement fallback")]
+    [Tooltip("Minimum distance an axis must allow to be chosen when diagonal is blocked.")]
+    public float axisFallbackThreshold = 0.1f;
 
     [Header("References")]
     public Rigidbody2D rb;
@@ -193,11 +197,72 @@ public class PlayerMovement : MonoBehaviour
     // Compute a target position in given direction for specific distance.
     Vector2 ComputeTarget(Vector2 dir, float distance)
     {
+        const float touchEpsilon = 0.01f;
+
         dir = dir.normalized;
         Vector2 origin = rb.position;
 
+        bool isDiagonal = !Mathf.Approximately(dir.x, 0f) && !Mathf.Approximately(dir.y, 0f);
+
+        // --- Non-diagonal input: use standard logic ---
+        if (!isDiagonal)
+        {
+            float avail = GetAvailableDistance(dir, distance);
+            if (avail <= touchEpsilon) return origin;
+            return origin + dir * Mathf.Min(avail, distance);
+        }
+
+        // --- Diagonal handling ---
+        float availDiag = GetAvailableDistance(dir, distance);
+
+        // If diagonal fully free, use it directly
+        if (availDiag >= distance - Mathf.Epsilon)
+            return origin + dir * distance;
+
+        if (availDiag >= axisFallbackThreshold && availDiag > touchEpsilon)
+            return origin + dir * Mathf.Min(availDiag, distance);
+
+        // Otherwise check each axis individually
+        Vector2 xDir = new Vector2(Mathf.Sign(dir.x), 0f);
+        Vector2 yDir = new Vector2(0f, Mathf.Sign(dir.y));
+
+        float availX = GetAvailableDistance(xDir, distance);
+        float availY = GetAvailableDistance(yDir, distance);
+
+        // Use direct world-unit threshold now
+        bool xMeets = availX >= axisFallbackThreshold && availX > touchEpsilon;
+        bool yMeets = availY >= axisFallbackThreshold && availY > touchEpsilon;
+
+        if (xMeets && !yMeets)
+            return origin + xDir * Mathf.Min(availX, distance);
+
+        if (yMeets && !xMeets)
+            return origin + yDir * Mathf.Min(availY, distance);
+
+        if (xMeets && yMeets)
+        {
+            // both meet threshold: prefer farther axis
+            if (availX >= availY)
+                return origin + xDir * Mathf.Min(availX, distance);
+            else
+                return origin + yDir * Mathf.Min(availY, distance);
+        }
+
+        // Neither axis meets threshold — use partial diagonal if possible
+        if (availDiag > touchEpsilon)
+            return origin + dir * Mathf.Min(availDiag, distance);
+
+        return origin; // fully blocked
+    }
+
+    // Helper (unchanged)
+    float GetAvailableDistance(Vector2 dir, float maxDistance)
+    {
+        dir = dir.normalized;
+        float castDist = maxDistance + obstacleCastPadding;
+
         RaycastHit2D[] hits = new RaycastHit2D[8];
-        int hitCount = coll.Cast(dir, hits, distance);
+        int hitCount = coll.Cast(dir, hits, castDist);
 
         float closest = float.PositiveInfinity;
         for (int i = 0; i < hitCount; i++)
@@ -206,23 +271,14 @@ public class PlayerMovement : MonoBehaviour
             if (h.collider == null) continue;
             if ((obstacleMask.value & (1 << h.collider.gameObject.layer)) == 0) continue;
 
-            // subtract padding so we don't return an exact zero distance
             float candidate = Mathf.Max(0f, h.distance - obstacleCastPadding);
             if (candidate < closest) closest = candidate;
         }
 
         if (closest != float.PositiveInfinity)
-        {
-            const float touchEpsilon = 0.01f;
-            if (closest <= touchEpsilon)
-                return origin;
+            return Mathf.Max(0f, Mathf.Min(closest, maxDistance));
 
-            float distToUse = Mathf.Min(closest - obstacleCastPadding, distance);
-            return origin + dir * Mathf.Max(0f, distToUse);
-        }
-
-
-        return origin + dir * distance;
+        return maxDistance;
     }
 
 
