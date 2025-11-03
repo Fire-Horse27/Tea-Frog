@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: wall sheet_18
+  m_Name: kitchen sheet_2
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
-  m_Sprite: {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  m_Sprite: {fileID: -1236215324, guid: 8954fd21bc32b5f4bbc6b522b9505705, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
