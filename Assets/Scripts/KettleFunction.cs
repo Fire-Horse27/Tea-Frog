@@ -13,11 +13,4 @@ public class KettleFuntion : MonoBehaviour
         currentIndex = (currentIndex + 1) % sprites.Length;
         targetRenderer.sprite = sprites[currentIndex];
     }
-
-    // Example trigger handler on the same GameObject
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-            NextSprite();
-    }
 }

@@ -8,7 +8,7 @@ public class GrabItem : MonoBehaviour
     [Tooltip("The id of the item to pick up (e.g. 'Green', 'Glass', 'Honey')")]
     public string itemID;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
@@ -21,6 +21,10 @@ public class GrabItem : MonoBehaviour
             if (heldTea != null)
             {
                 heldTea.SetHeld(itemID);
+                if (itemID == "Hot" && heldTea.cupFilled == "")
+                {
+                    GetComponent<KettleFuntion>().NextSprite();
+                }
             }
             else
             {

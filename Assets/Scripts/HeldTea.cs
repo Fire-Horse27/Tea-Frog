@@ -3,18 +3,7 @@ using UnityEngine;
 public class HeldTea : MonoBehaviour
 {
     string cupHeld = "";
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string cupFilled = "";
 
     void EnableSprite(string childName)
     {
@@ -32,7 +21,6 @@ public class HeldTea : MonoBehaviour
 
     public void SetHeld(string item)
     {
-        Debug.LogWarning($"Finding '{item}'!");
         switch (item)
         {
             case "Glass":
@@ -52,6 +40,14 @@ public class HeldTea : MonoBehaviour
                 SetMilk();
                 break;
 
+            case "Hot":
+                SetHot();
+                break;
+
+            case "Water":
+                SetWater();
+                break;
+
             default:
                 SetTea(item);
                 break;
@@ -66,7 +62,8 @@ public class HeldTea : MonoBehaviour
 
     void SetTea(string tea)
     {
-        if (cupHeld != "") EnableSprite(tea + " " + cupHeld);
+        if (cupFilled == "Water" || cupFilled == "Hot") EnableSprite(tea + " " + cupHeld);
+        cupFilled = "Tea";
     }
 
     void SetIce()
@@ -76,12 +73,24 @@ public class HeldTea : MonoBehaviour
 
     void SetHoney()
     {
-        if (cupHeld != "") EnableSprite("Honey " + cupHeld);
+        if (cupFilled == "Tea") EnableSprite("Honey " + cupHeld);
     }
 
     void SetMilk()
     {
-        if (cupHeld != "") EnableSprite("Milk " + cupHeld);
+        if (cupFilled == "Tea") EnableSprite("Milk " + cupHeld);
+    }
+
+    void SetHot()
+    {
+        if (cupHeld == "Tea" && cupFilled == "") EnableSprite("Hot Tea");
+        cupFilled = "Hot";
+    }
+
+    void SetWater()
+    {
+        if (cupHeld == "Glass" && cupFilled == "") EnableSprite("Iced Tea");
+        cupFilled = "Water";
     }
 
     public void ClearEverything()
@@ -90,5 +99,7 @@ public class HeldTea : MonoBehaviour
         {
             sr.enabled = false;
         }
+        cupFilled = "";
+        cupHeld = "";
     }
 }

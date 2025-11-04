@@ -289,6 +289,7 @@ public class PlayerMovement : MonoBehaviour
         Vector2 start = rb.position;
         Vector2 target = ComputeTarget(dir, distance);
 
+        // If effectively not moving, still run a tiny "no-move" hop to respect cooldown + sprite
         if ((target - start).sqrMagnitude < 0.0001f)
         {
             isLeaping = true;
@@ -303,13 +304,25 @@ public class PlayerMovement : MonoBehaviour
 
         SetSpriteForState("jump", dir);
 
+        // --- scale duration proportional to actual distance moved ---
+        float actualDistance = Vector2.Distance(start, target);
+        float effectiveDuration = leapDuration;
+        if (distance > 0f)
+        {
+            // scale by fraction moved; clamp to avoid pathological tiny/zero durations
+            float frac = Mathf.Clamp01(actualDistance / distance);
+            effectiveDuration = leapDuration * frac;
+            // optional: ensure we have a minimum duration so sprite transitions are visible
+            effectiveDuration = Mathf.Max(effectiveDuration, 0.01f);
+        }
+
         float elapsed = 0f;
         rb.linearVelocity = Vector2.zero;
 
-        while (elapsed < leapDuration)
+        while (elapsed < effectiveDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / leapDuration);
+            float t = Mathf.Clamp01(elapsed / effectiveDuration);
             float ease = t * t * (3f - 2f * t);
 
             Vector2 pos = Vector2.Lerp(start, target, ease);
@@ -323,10 +336,12 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
 
+        // ensure final snap
         rb.MovePosition(target);
 
         SetSpriteForState("idle", dir);
 
+        // keep cooldown behavior unchanged (you can scale this too if desired)
         yield return new WaitForSeconds(cooldown);
 
         isLeaping = false;
