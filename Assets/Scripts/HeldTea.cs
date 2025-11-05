@@ -62,8 +62,12 @@ public class HeldTea : MonoBehaviour
 
     void SetTea(string tea)
     {
-        if (cupFilled == "Water" || cupFilled == "Hot") EnableSprite(tea + " " + cupHeld);
-        cupFilled = "Tea";
+        if (cupFilled == "Water" || cupFilled == "Hot")
+        {
+            EnableSprite(tea + " " + cupHeld);
+            cupFilled = "Tea";
+        }
+            
     }
 
     void SetIce()
@@ -83,14 +87,20 @@ public class HeldTea : MonoBehaviour
 
     void SetHot()
     {
-        if (cupHeld == "Tea" && cupFilled == "") EnableSprite("Hot Tea");
-        cupFilled = "Hot";
+        if (cupHeld == "Tea" && cupFilled == "")
+        {
+            EnableSprite("Hot Tea");
+            cupFilled = "Hot";
+        }
     }
 
     void SetWater()
     {
-        if (cupHeld == "Glass" && cupFilled == "") EnableSprite("Iced Tea");
-        cupFilled = "Water";
+        if (cupHeld == "Glass" && cupFilled == "")
+        {
+            EnableSprite("Iced Tea");
+            cupFilled = "Water";
+        }
     }
 
     public void ClearEverything()

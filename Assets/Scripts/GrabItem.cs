@@ -1,35 +1,62 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class GrabItem : MonoBehaviour
 {
-    [Tooltip("Reference to the HeldTea component on the player or hand object")]
-    public HeldTea heldTea;
-
-    [Tooltip("The id of the item to pick up (e.g. 'Green', 'Glass', 'Honey')")]
     public string itemID;
+    public float promptOffsetY = 1f;
+    public static Transform Button;
+    public static Transform playerTransform;
 
-    private void OnTriggerStay2D(Collider2D other)
+    Collider2D col;
+    HeldTea heldTea;
+    bool showingPrompt;
+
+    void Awake()
     {
-        if (other.CompareTag("Player"))
+        col = GetComponent<Collider2D>();
+
+        if (playerTransform == null)
         {
-            if (heldTea == null)
+            var playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) playerTransform = playerObj.transform;
+        }
+
+        if (Button == null)
+        {
+            var buttonObj = GameObject.Find("EButton");
+            if (buttonObj != null) Button = buttonObj.transform;
+        }
+
+        if (playerTransform != null)
+            heldTea = playerTransform.GetComponentInChildren<HeldTea>();
+    }
+
+    void Update()
+    {
+        if (col.OverlapPoint(playerTransform.position))
+        {
+            if (!showingPrompt)
             {
-                // Try to get it from the player if not assigned in inspector
-                heldTea = other.GetComponentInChildren<HeldTea>();
+                showingPrompt = true;
+                Button.gameObject.SetActive(true);
+                Button.position = new Vector3(transform.position.x, transform.position.y + promptOffsetY, transform.position.z);
             }
 
-            if (heldTea != null)
+            if (Input.GetKeyDown(KeyCode.E) && heldTea != null)
             {
                 heldTea.SetHeld(itemID);
                 if (itemID == "Hot" && heldTea.cupFilled == "")
                 {
-                    GetComponent<KettleFuntion>().NextSprite();
+                    var kettle = GetComponent<KettleFuntion>();
+                    if (kettle != null) kettle.NextSprite();
                 }
             }
-            else
-            {
-                Debug.LogWarning("HeldTea component not found on player!");
-            }
+        }
+        else if (showingPrompt)
+        {
+            showingPrompt = false;
+            Button.gameObject.SetActive(false);
         }
     }
 }
