@@ -3,14 +3,19 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class GrabItem : MonoBehaviour
 {
+    [Tooltip("ID passed to HeldTea.SetHeld")]
     public string itemID;
-    public float promptOffsetY = 1f;
+
+    [Tooltip("y offset in world units for the button above the item")]
+    public float promptOffsetY = .5f;
+
+    // Shared references (set by EButtonRegistrar)
     public static Transform Button;
     public static Transform playerTransform;
 
     Collider2D col;
     HeldTea heldTea;
-    bool showingPrompt;
+    public bool showingPrompt;
 
     void Awake()
     {
@@ -18,14 +23,8 @@ public class GrabItem : MonoBehaviour
 
         if (playerTransform == null)
         {
-            var playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) playerTransform = playerObj.transform;
-        }
-
-        if (Button == null)
-        {
-            var buttonObj = GameObject.Find("EButton");
-            if (buttonObj != null) Button = buttonObj.transform;
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) playerTransform = p.transform;
         }
 
         if (playerTransform != null)
@@ -34,29 +33,38 @@ public class GrabItem : MonoBehaviour
 
     void Update()
     {
-        if (col.OverlapPoint(playerTransform.position))
+        bool playerInside = col.OverlapPoint(playerTransform.position);
+
+        if (playerInside)
         {
-            if (!showingPrompt)
+            showingPrompt = true;
+            Button.position = new Vector3(transform.position.x,
+                                          transform.position.y + promptOffsetY,
+                                          -1);
+            Button.gameObject.SetActive(true);
+        }
+        else if (!playerInside && showingPrompt)
+        {
+            Button.gameObject.SetActive(false);
+            showingPrompt = false;
+        }
+
+        if (showingPrompt && heldTea != null && Input.GetKeyDown(KeyCode.E))
+        {
+            if (itemID == "Hot" && heldTea.cupHeld == "Tea" && heldTea.cupFilled == "")
             {
-                showingPrompt = true;
-                Button.gameObject.SetActive(true);
-                Button.position = new Vector3(transform.position.x, transform.position.y + promptOffsetY, transform.position.z);
+                var kettle = GetComponent<KettleFuntion>();
+                if (kettle != null) kettle.NextSprite();
             }
 
-            if (Input.GetKeyDown(KeyCode.E) && heldTea != null)
+            if (itemID == "Trashcan")
+            {
+                heldTea.ClearEverything();
+            }
+            else
             {
                 heldTea.SetHeld(itemID);
-                if (itemID == "Hot" && heldTea.cupFilled == "")
-                {
-                    var kettle = GetComponent<KettleFuntion>();
-                    if (kettle != null) kettle.NextSprite();
-                }
             }
-        }
-        else if (showingPrompt)
-        {
-            showingPrompt = false;
-            Button.gameObject.SetActive(false);
         }
     }
 }

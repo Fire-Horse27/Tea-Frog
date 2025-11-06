@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HeldTea : MonoBehaviour
 {
-    string cupHeld = "";
+    public string cupHeld = "";
     public string cupFilled = "";
 
     void EnableSprite(string childName)
@@ -12,6 +12,20 @@ public class HeldTea : MonoBehaviour
         {
             var sr = t.GetComponent<SpriteRenderer>();
             if (sr != null) sr.enabled = true;
+        }
+        else
+        {
+            Debug.LogWarning($"Child '{childName}' not found!");
+        }
+    }
+
+    void DisableSprite(string childName)
+    {
+        Transform t = transform.Find(childName);
+        if (t != null)
+        {
+            var sr = t.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = false;
         }
         else
         {
@@ -65,6 +79,8 @@ public class HeldTea : MonoBehaviour
         if (cupFilled == "Water" || cupFilled == "Hot")
         {
             EnableSprite(tea + " " + cupHeld);
+            DisableSprite("Hot Tea");
+            DisableSprite("Water Glass");
             cupFilled = "Tea";
         }
             
