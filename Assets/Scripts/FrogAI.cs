@@ -70,7 +70,10 @@ public class FrogAI : MonoBehaviour
         queueIndex = -1;
 
         if (counterPoint != null)
+        {
             MoveTo(counterPoint.position);
+            Debug.Log("Is trying to move to the counter");
+        }
         else
             Debug.LogWarning("[FrogAI2D] InitializeNew called but counterPoint is null.");
     }
@@ -103,7 +106,7 @@ public class FrogAI : MonoBehaviour
         if (pathfinder == null) return;
         path = pathfinder.FindPath(transform.position, worldTarget);
         pathIndex = 0;
-        UpdateAnimatorWalking(path != null && path.Count > 0);
+        //UpdateAnimatorWalking(path != null && path.Count > 0);
     }
 
     void Update()
