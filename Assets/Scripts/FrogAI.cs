@@ -3,30 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// FrogAI2D: 2D customer behaviour for tilemap-based pathfinding.
-/// Attach to the Frog/Customer prefab. File name: FrogAI2D.cs
+/// FrogAI2D with local avoidance (separation steering).
+/// Attach to your frog prefab. File name: FrogAI2D.cs
 /// Spawner must set frog.counterPoint before calling InitializeNew().
-/// Expects a PathfinderAStar component in scene and a CafeManager2D for seat logic.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class FrogAI : MonoBehaviour
 {
+    #region Movement & Timing
     [Header("Movement")]
     public float speed = 2f;
     public float arriveThreshold = 0.06f;
 
     [Header("Order")]
-    public float orderTime = 8f;          // time before impatient leave
-    public float servedLinger = 0.6f;     // time to stay after being served
+    public float orderTime = 8f;
+    public float servedLinger = 0.6f;
 
     [Header("Optional")]
-    public Animator animator;             // assign if you have animations
+    public Animator animator;
+    #endregion
 
-    // Runtime / scene refs (Spawner should set counterPoint)
-    [HideInInspector] public Transform counterPoint;
+    #region Avoidance (tweak these)
+    [Header("Local Avoidance")]
+    [Tooltip("How far to look for neighbors (world units).")]
+    public float avoidanceRadius = 0.6f;
+    [Tooltip("How strongly to push away from neighbors.")]
+    public float avoidanceStrength = 1.2f;
+    [Tooltip("How quickly avoidance strength falls off with distance (1 = linear).")]
+    public float avoidanceFalloff = 1.0f;
+    [Tooltip("Cap on how far the avoidance can offset the target (world units).")]
+    public float maxAvoidanceOffset = 0.6f;
+    #endregion
+
+    // Scene / runtime refs
+    [HideInInspector] public Transform counterPoint; // set by Spawner
+    [HideInInspector] public Transform exitPoint;    // optional (or use Exit tag)
+
     private PathfinderAStar pathfinder;
-
-    // Path-following state
     private List<Vector3> path = new List<Vector3>();
     private int pathIndex = 0;
 
@@ -39,16 +52,48 @@ public class FrogAI : MonoBehaviour
     private bool served = false;
     private float orderTimer = 0f;
 
+    // Static registry of all active frogs for quick neighborhood queries
+    private static List<FrogAI> allFrogs = new List<FrogAI>();
+
+    // Reservation & movement
+    private Vector3Int reservedCell;          // cell currently reserved by this frog (world->cell)
+    private float reserveRetryInterval = 0.25f; // seconds to wait before retrying reservation
+    private float reserveRetryTimer = 0f;
+    private TilemapGrid gridRef => pathfinder != null ? pathfinder.grid : null;
+
+
     void Awake()
     {
         pathfinder = FindObjectOfType<PathfinderAStar>();
-        if (pathfinder == null)
-            Debug.LogError("[FrogAI2D] No PathfinderAStar found in the scene.");
+        if (pathfinder == null) Debug.LogError("[FrogAI] No PathfinderAStar found in scene.");
     }
 
     void OnEnable()
     {
-        // clear runtime state (Spawner will call InitializeNew)
+        allFrogs.Add(this);
+        ResetState();
+    }
+
+    void OnDisable()
+    {
+        // Free reservations
+        if (reservedCell != Vector3Int.zero)
+        {
+            ReservationGrid.Instance?.Release(reservedCell, this);
+            reservedCell = Vector3Int.zero;
+        }
+        ReservationGrid.Instance?.ReleaseAllOwnedBy(this);
+        // existing seat freeing...
+        if (assignedSeat != null)
+        {
+            CafeManager.Instance.NotifySeatFreed(assignedSeat);
+            assignedSeat = null;
+        }
+        allFrogs.Remove(this); // if you kept the static list
+    }
+
+    void ResetState()
+    {
         path.Clear();
         pathIndex = 0;
         reachedCounter = false;
@@ -57,10 +102,6 @@ public class FrogAI : MonoBehaviour
         queueIndex = -1;
     }
 
-    /// <summary>
-    /// Call this immediately after the spawner activates the frog.
-    /// Spawner should set counterPoint beforehand: frog.counterPoint = counterTransform;
-    /// </summary>
     public void InitializeNew()
     {
         orderTimer = orderTime;
@@ -69,19 +110,10 @@ public class FrogAI : MonoBehaviour
         assignedSeat = null;
         queueIndex = -1;
 
-        if (counterPoint != null)
-        {
-            MoveTo(counterPoint.position);
-            Debug.Log("Is trying to move to the counter");
-        }
-        else
-            Debug.LogWarning("[FrogAI2D] InitializeNew called but counterPoint is null.");
+        if (counterPoint != null) MoveTo(counterPoint.position);
+        else Debug.LogWarning($"{name}: counterPoint not set on InitializeNew()", this);
     }
 
-    /// <summary>
-    /// Called by CafeManager2D to give this frog a queue index.
-    /// Moves to the queue point automatically.
-    /// </summary>
     public void SetQueueIndex(int index)
     {
         queueIndex = index;
@@ -89,121 +121,296 @@ public class FrogAI : MonoBehaviour
         if (q != null) MoveTo(q.position);
     }
 
-    /// <summary>
-    /// Called by CafeManager2D to assign a seat.
-    /// </summary>
     public void AssignSeat(Seat seat)
     {
         assignedSeat = seat;
-        MoveTo(assignedSeat.SeatPoint.position);
+
+        // If frog was in a queue, attempt curved move around line (fallback to direct)
+        if (queueIndex >= 0)
+        {
+            MoveFromQueueToSeat();
+            queueIndex = -1;
+        }
+        else
+        {
+            MoveTo(assignedSeat.SeatPoint.position);
+        }
+    }
+
+    // Helper: two-step move to avoid line (keeps same idea from prior code)
+    private void MoveFromQueueToSeat()
+    {
+        if (assignedSeat == null || pathfinder == null || pathfinder.grid == null)
+        {
+            if (assignedSeat != null) MoveTo(assignedSeat.SeatPoint.position);
+            return;
+        }
+
+        Vector3 seatPos = assignedSeat.SeatPoint.position;
+        Vector3 dirToSeat = (seatPos - transform.position).normalized;
+        if (dirToSeat.sqrMagnitude < 0.0001f) dirToSeat = Vector3.up;
+
+        float forwardStep = 0.6f;
+        Vector3 forwardPoint = transform.position + dirToSeat * forwardStep;
+        Vector3 perp = new Vector3(-dirToSeat.y, dirToSeat.x, 0f).normalized;
+        float lateralSpacing = 0.35f;
+        float sideMultiplier = (queueIndex % 2 == 0) ? 1f : -1f;
+        float lateralOffset = lateralSpacing * Mathf.Ceil(queueIndex / 2f) * sideMultiplier;
+        Vector3 intermediate = forwardPoint + perp * lateralOffset;
+
+        List<Vector3> p1 = pathfinder.FindPath(transform.position, intermediate);
+        List<Vector3> p2 = pathfinder.FindPath(intermediate, seatPos);
+
+        if ((p1 == null || p1.Count == 0) || (p2 == null || p2.Count == 0))
+        {
+            List<Vector3> direct = pathfinder.FindPath(transform.position, seatPos);
+            if (direct != null && direct.Count > 0) { path = direct; pathIndex = 0; UpdateAnimatorWalking(true); return; }
+            if (p1 != null && p1.Count > 0) { path = p1; pathIndex = 0; UpdateAnimatorWalking(true); return; }
+            MoveTo(seatPos); return;
+        }
+
+        // combine
+        List<Vector3> combined = new List<Vector3>(p1);
+        if (p2.Count > 0)
+        {
+            Vector3 firstOfSecond = p2[0];
+            if (combined.Count > 0 && Vector3.Distance(combined[combined.Count - 1], firstOfSecond) < 0.01f)
+            {
+                for (int i = 1; i < p2.Count; i++) combined.Add(p2[i]);
+            }
+            else combined.AddRange(p2);
+        }
+
+        path = combined; pathIndex = 0; UpdateAnimatorWalking(true);
     }
 
     /// <summary>
-    /// Request a path from current position to target world position.
+    /// Normal MoveTo: get a path from pathfinder and start following it.
     /// </summary>
     public void MoveTo(Vector3 worldTarget)
     {
-        if (pathfinder == null) return;
-        path = pathfinder.FindPath(transform.position, worldTarget);
+        if (pathfinder == null) pathfinder = FindObjectOfType<PathfinderAStar>();
+        if (pathfinder == null || pathfinder.grid == null)
+        {
+            Debug.LogError($"{name}: Pathfinder or grid missing in MoveTo.", this);
+            return;
+        }
+
+        var newPath = pathfinder.FindPath(transform.position, worldTarget);
+        if (newPath == null || newPath.Count == 0)
+        {
+            // no path available
+            path = new List<Vector3>();
+            pathIndex = 0;
+            UpdateAnimatorWalking(false);
+            return;
+        }
+
+        path = newPath;
         pathIndex = 0;
-        //UpdateAnimatorWalking(path != null && path.Count > 0);
+        UpdateAnimatorWalking(true);
     }
 
     void Update()
     {
-        // Follow path if one exists
+        // movement + avoidance only while following a path
         if (path != null && pathIndex < path.Count)
         {
-            Vector3 target = path[pathIndex];
-            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+            Vector3 nodeTarget = path[pathIndex];
 
-            if (Vector3.Distance(transform.position, target) <= arriveThreshold)
+            // compute the next target cell we will attempt to occupy
+            Vector3Int nextCell = gridRef != null ? gridRef.WorldToCell(nodeTarget) : Vector3Int.FloorToInt(nodeTarget);
+
+            // If we don't yet own the reservation for the next cell, try to reserve it
+            if (reservedCell != nextCell)
             {
+                // release any previous reservation we had (we are heading for a different cell)
+                if (reservedCell != Vector3Int.zero)
+                {
+                    ReservationGrid.Instance?.Release(reservedCell, this);
+                    reservedCell = Vector3Int.zero;
+                }
+
+                // try to reserve nextCell
+                if (ReservationGrid.Instance != null)
+                {
+                    if (ReservationGrid.Instance.TryReserve(nextCell, this))
+                    {
+                        // success: mark it
+                        reservedCell = nextCell;
+                        reserveRetryTimer = 0f;
+                    }
+                    else
+                    {
+                        // failed: wait a bit and optionally re-request path later
+                        reserveRetryTimer -= Time.deltaTime;
+                        if (reserveRetryTimer <= 0f)
+                        {
+                            reserveRetryTimer = reserveRetryInterval;
+                            // if blocked for some retries, optionally re-path to avoid deadlocks
+                            // small heuristic: if owner is not moving, try to replan
+                            var owner = ReservationGrid.Instance.GetOwner(nextCell);
+                            if (owner != null && owner == this) { /* should not happen */ }
+                            else
+                            {
+                                // optional: attempt to replan after a short wait
+                                if (Random.value < 0.25f) // occasional replan, spread across frogs
+                                    RepathToCurrentGoal();
+                            }
+                        }
+                        // do not move if can't reserve target cell
+                        UpdateAnimatorWalking(false);
+                        return;
+                    }
+                }
+            }
+
+            // compute avoidance offset as before
+            Vector3 avoidOffset = ComputeAvoidanceOffset();
+            if (avoidOffset.magnitude > maxAvoidanceOffset) avoidOffset = avoidOffset.normalized * maxAvoidanceOffset;
+            Vector3 finalTarget = nodeTarget + avoidOffset;
+
+            // move
+            transform.position = Vector3.MoveTowards(transform.position, finalTarget, speed * Time.deltaTime);
+
+            // if close enough to the actual node (not offset), advance and release reservation
+            if (Vector3.Distance(transform.position, nodeTarget) <= arriveThreshold)
+            {
+                // we successfully entered the reserved cell -> release previous cell reservation (if any)
+                // release previous cell (the one behind us). Compute previous cell:
+                if (pathIndex > 0 && gridRef != null)
+                {
+                    Vector3Int prevCell = gridRef.WorldToCell(path[pathIndex - 1]);
+                    ReservationGrid.Instance?.Release(prevCell, this);
+                }
+
                 pathIndex++;
                 if (pathIndex >= path.Count) OnReachedPathEnd();
             }
         }
         else
         {
-            // If seated and not served, reduce patience
+            // not moving: if seated and not served, tick patience
             if (assignedSeat != null && !served)
             {
                 orderTimer -= Time.deltaTime;
-                if (orderTimer <= 0f)
-                {
-                    // leave unsatisfied
-                    StartCoroutine(LeaveRoutine());
-                }
+                if (orderTimer <= 0f) StartCoroutine(LeaveRoutine());
             }
         }
     }
 
+    private void RepathToCurrentGoal()
+{
+    // Try to recompute a path to the same final destination (last node in path) to avoid static blockages
+    if (pathfinder == null || path == null || path.Count == 0) return;
+    Vector3 currentGoal = path[path.Count - 1];
+    var newPath = pathfinder.FindPath(transform.position, currentGoal);
+    if (newPath != null && newPath.Count > 0)
+    {
+        // release any current reservation (we will re-reserve next cells of new path)
+        if (reservedCell != Vector3Int.zero)
+        {
+            ReservationGrid.Instance?.Release(reservedCell, this);
+            reservedCell = Vector3Int.zero;
+        }
+        path = newPath;
+        pathIndex = 0;
+        UpdateAnimatorWalking(true);
+    }
+}
+
+
     /// <summary>
-    /// Called when the frog reaches the final point of its current path.
-    /// Handles arriving at counter, queue spot, or seat.
+    /// Compute a separation vector from nearby frogs (simple weighted sum).
+    /// Points away from neighbors; stronger when closer.
     /// </summary>
+    Vector3 ComputeAvoidanceOffset()
+    {
+        Vector3 sum = Vector3.zero;
+        int count = 0;
+        float r = avoidanceRadius;
+
+        for (int i = 0; i < allFrogs.Count; i++)
+        {
+            var other = allFrogs[i];
+            if (other == this || other.gameObject == null || !other.gameObject.activeInHierarchy) continue;
+
+            Vector3 toMe = transform.position - other.transform.position;
+            float dist = toMe.magnitude;
+            if (dist <= 0f || dist > r) continue;
+
+            // repulsion strength (inverse distance with falloff)
+            float t = Mathf.Clamp01(1f - (dist / r));       // 1 at 0 dist, 0 at r
+            float strength = Mathf.Pow(t, Mathf.Max(1f, avoidanceFalloff)) * avoidanceStrength;
+
+            Vector3 repulseDir = (dist > 0f) ? toMe.normalized : (Random.insideUnitSphere.normalized);
+            sum += repulseDir * strength;
+            count++;
+        }
+
+        if (count == 0) return Vector3.zero;
+
+        // average
+        Vector3 avg = sum / Mathf.Max(1, count);
+        // since we work in 2D, zero out Z
+        avg.z = 0f;
+        return avg;
+    }
+
     void OnReachedPathEnd()
     {
         UpdateAnimatorWalking(false);
 
-        // If we haven't reached counter yet, treat this as arrival to counter
+        // arrival at counter
         if (!reachedCounter && counterPoint != null)
         {
-            // mark we reached counter and request seat or queue
             reachedCounter = true;
 
+            // if you want the "step down then left" behavior we discussed earlier, you can
+            // StartCoroutine(StepOffCounterThenSeat(...));
+            // otherwise proceed directly to seating logic:
             if (CafeManager.Instance.TryAssignSeat(this, out Seat seat))
             {
                 AssignSeat(seat);
             }
             else
             {
-                CafeManager.Instance.Enqueue(this); // will call SetQueueIndex on us
+                CafeManager.Instance.Enqueue(this);
             }
             return;
         }
 
-        // If we have an assigned seat and reached it -> snap and sit
+        // seated arrival
         if (assignedSeat != null)
         {
-            transform.position = assignedSeat.SeatPoint.position; // precise snap
+            transform.position = assignedSeat.SeatPoint.position;
             StartCoroutine(SeatedRoutine());
             return;
         }
-
-        // Otherwise we're at a queue point; just wait until CafeManager assigns a seat
     }
 
     IEnumerator SeatedRoutine()
     {
         UpdateAnimatorSit(true);
-
         orderTimer = orderTime;
-        while (!served && orderTimer > 0f)
-            yield return null;
+        while (!served && orderTimer > 0f) yield return null;
 
         if (served)
         {
-            // linger a little when served
             yield return new WaitForSeconds(servedLinger);
             StartCoroutine(LeaveRoutine());
         }
         else
         {
-            // impatient leave
             StartCoroutine(LeaveRoutine());
         }
     }
 
-    /// <summary>
-    /// Called externally (player/server) to mark this frog as served.
-    /// </summary>
     public void Serve()
     {
         if (assignedSeat == null) return;
         served = true;
         UpdateAnimatorHappy();
-        // The seat is freed by leaving routine so next can be seated
     }
 
     IEnumerator LeaveRoutine()
@@ -211,52 +418,32 @@ public class FrogAI : MonoBehaviour
         UpdateAnimatorSit(false);
         UpdateAnimatorWalking(true);
 
-        // Free the seat immediately so next frog can be seated
         if (assignedSeat != null)
         {
             CafeManager.Instance.NotifySeatFreed(assignedSeat);
             assignedSeat = null;
         }
 
-        // Path to Exit object (tagged "Exit")
-        GameObject exitGO = GameObject.FindWithTag("Exit");
-        if (exitGO != null && pathfinder != null)
+        // path to Exit
+        Transform exitT = exitPoint;
+        if (exitT == null)
         {
-            MoveTo(exitGO.transform.position);
-            // wait until path completed (Update will drive movement)
-            while (path != null && pathIndex < path.Count)
-                yield return null;
+            var go = GameObject.FindWithTag("Exit");
+            if (go != null) exitT = go.transform;
         }
 
-        // deactivate (return to pool)
+        if (exitT != null && pathfinder != null)
+        {
+            MoveTo(exitT.position);
+            while (path != null && pathIndex < path.Count) yield return null;
+        }
+
         gameObject.SetActive(false);
     }
 
-    void OnDisable()
-    {
-        // safety: if deactivated unexpectedly, free seat
-        if (assignedSeat != null)
-        {
-            CafeManager.Instance.NotifySeatFreed(assignedSeat);
-            assignedSeat = null;
-        }
-    }
-
     #region Animator helpers
-    void UpdateAnimatorWalking(bool walking)
-    {
-        if (animator == null) return;
-        animator.SetBool("isWalking", walking);
-    }
-    void UpdateAnimatorSit(bool sit)
-    {
-        if (animator == null) return;
-        animator.SetBool("isSitting", sit);
-    }
-    void UpdateAnimatorHappy()
-    {
-        if (animator == null) return;
-        animator.SetTrigger("isHappy");
-    }
+    void UpdateAnimatorWalking(bool walking) { if (animator != null) animator.SetBool("isWalking", walking); }
+    void UpdateAnimatorSit(bool sit) { if (animator != null) animator.SetBool("isSitting", sit); }
+    void UpdateAnimatorHappy() { if (animator != null) animator.SetTrigger("isHappy"); }
     #endregion
 }
