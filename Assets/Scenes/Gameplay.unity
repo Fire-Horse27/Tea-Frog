@@ -446,7 +446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3df9ed7a8d3b4e4b8f340605491b25d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
-  frogPrefab: {fileID: 1180654177}
+  frogPrefab: {fileID: 1180654182}
   poolSize: 10
   spawnPoint: {fileID: 1409660897}
   counterPoint: {fileID: 1044201866}
@@ -5675,7 +5675,10 @@ PrefabInstance:
       addedObject: {fileID: 1180654171}
     - targetCorrespondingSourceObject: {fileID: 7181906399236507884, guid: 789a39ea18583494f93b837e99a30359, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1180654177}
+      addedObject: {fileID: 1180654182}
+    - targetCorrespondingSourceObject: {fileID: 7181906399236507884, guid: 789a39ea18583494f93b837e99a30359, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1180654183}
   m_SourcePrefab: {fileID: 100100000, guid: 789a39ea18583494f93b837e99a30359, type: 3}
 --- !u!1 &1180654170 stripped
 GameObject:
@@ -5712,7 +5715,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -5728,7 +5731,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.6296296, y: 0.5571729}
   m_EdgeRadius: 0
---- !u!114 &1180654177
+--- !u!114 &1180654182
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5751,6 +5754,20 @@ MonoBehaviour:
   maxAvoidanceOffset: 0.6
   counterPoint: {fileID: 0}
   exitPoint: {fileID: 0}
+--- !u!114 &1180654183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180654170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71258cc9c85f65c45a7dbfd27c9110e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerTriggerAvoidance
+  tileStep: 1
+  retryInterval: 0.25
 --- !u!1 &1202679380
 GameObject:
   m_ObjectHideFlags: 0

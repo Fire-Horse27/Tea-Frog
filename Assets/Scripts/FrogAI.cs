@@ -413,33 +413,176 @@ public class FrogAI : MonoBehaviour
         UpdateAnimatorHappy();
     }
 
+    // Replace your existing LeaveRoutine() with this:
     IEnumerator LeaveRoutine()
     {
+        // clear sitting state, start walking animation
         UpdateAnimatorSit(false);
         UpdateAnimatorWalking(true);
 
+        // If sitting, free the seat immediately so other frogs can be assigned
         if (assignedSeat != null)
         {
             CafeManager.Instance.NotifySeatFreed(assignedSeat);
             assignedSeat = null;
         }
 
-        // path to Exit
+        // Find exit transform (prefer explicit exitPoint, else tag lookup)
         Transform exitT = exitPoint;
         if (exitT == null)
         {
-            var go = GameObject.FindWithTag("Exit");
-            if (go != null) exitT = go.transform;
+            var g = GameObject.FindWithTag("Exit");
+            if (g != null) exitT = g.transform;
         }
 
-        if (exitT != null && pathfinder != null)
+        // If we don't have a valid exit or pathfinder, just deactivate
+        if (exitT == null || pathfinder == null || pathfinder.grid == null)
         {
-            MoveTo(exitT.position);
-            while (path != null && pathIndex < path.Count) yield return null;
+            // release any reservations we may still hold
+            if (reservedCell != Vector3Int.zero)
+            {
+                ReservationGrid.Instance?.Release(reservedCell, this);
+                reservedCell = Vector3Int.zero;
+            }
+            ReservationGrid.Instance?.ReleaseAllOwnedBy(this);
+
+            gameObject.SetActive(false);
+            yield break;
         }
 
+        // Build a two-leg path: (1) step-off tile near seat, (2) path to exit.
+        // If building fails, fall back to direct path to exit.
+        Vector3 exitPos = exitT.position;
+        List<Vector3> leavePath = BuildLeavePath(transform.position, exitPos);
+
+        if (leavePath == null || leavePath.Count == 0)
+        {
+            // fallback: try direct path to exit
+            leavePath = pathfinder.FindPath(transform.position, exitPos);
+        }
+
+        if (leavePath == null || leavePath.Count == 0)
+        {
+            Debug.LogWarning($"{name}: Could not find path to exit; deactivating.", this);
+            // cleanup any reservations
+            if (reservedCell != Vector3Int.zero)
+            {
+                ReservationGrid.Instance?.Release(reservedCell, this);
+                reservedCell = Vector3Int.zero;
+            }
+            ReservationGrid.Instance?.ReleaseAllOwnedBy(this);
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        // Set frog's path to the computed leave path and let Update() move it (Update handles reservations & avoidance)
+        path = leavePath;
+        pathIndex = 0;
+        UpdateAnimatorWalking(true);
+
+        // Wait until the frog has followed the path completely (Update will advance pathIndex)
+        while (path != null && pathIndex < path.Count)
+            yield return null;
+
+        // cleanup reservations (if any remain)
+        if (reservedCell != Vector3Int.zero)
+        {
+            ReservationGrid.Instance?.Release(reservedCell, this);
+            reservedCell = Vector3Int.zero;
+        }
+        ReservationGrid.Instance?.ReleaseAllOwnedBy(this);
+
+        // deactivate (returns to pool)
         gameObject.SetActive(false);
     }
+
+    /// <summary>
+    /// Build a leave path that first moves the frog one tile away from the seat toward the exit,
+    /// then from that intermediate point to the exit. Returns combined path or null if not buildable.
+    /// </summary>
+    private List<Vector3> BuildLeavePath(Vector3 fromPos, Vector3 exitPos)
+    {
+        if (pathfinder == null || pathfinder.grid == null) return null;
+
+        // tile step - adjust to your tile size if not 1 unit
+        float tileStep = 1f;
+
+        // direction from seat (current) towards exit
+        Vector3 dir = (exitPos - fromPos);
+        if (dir.sqrMagnitude < 0.0001f) dir = Vector3.right;
+        dir.Normalize();
+
+        // first step: move one tile "out" from seat toward the exit direction
+        Vector3 firstStepPoint = fromPos + dir * tileStep;
+
+        // second step is the tile one to the left/right of the first step to avoid hugging others (small lateral offset)
+        // We choose a perpendicular to dir and prefer the side with least reservation if possible (check both).
+        Vector3 perp = new Vector3(-dir.y, dir.x, 0f).normalized;
+        float lateral = 0.35f; // slight offset to skirt the line
+        Vector3 leftCandidate = firstStepPoint + perp * lateral;
+        Vector3 rightCandidate = firstStepPoint - perp * lateral;
+
+        // prefer candidate that yields a valid path to exit (and ideally unreserved)
+        List<Vector3> p1 = pathfinder.FindPath(fromPos, leftCandidate);
+        List<Vector3> p2 = pathfinder.FindPath(leftCandidate, exitPos);
+
+        if (p1 != null && p1.Count > 0 && p2 != null && p2.Count > 0)
+        {
+            // combine leftCandidate legs
+            List<Vector3> combined = new List<Vector3>(p1);
+            // append p2 skipping duplicate node if needed
+            if (p2.Count > 0)
+            {
+                Vector3 firstOfP2 = p2[0];
+                if (combined.Count > 0 && Vector3.Distance(combined[combined.Count - 1], firstOfP2) < 0.01f)
+                {
+                    for (int i = 1; i < p2.Count; i++) combined.Add(p2[i]);
+                }
+                else combined.AddRange(p2);
+            }
+            return combined;
+        }
+
+        // try right side
+        p1 = pathfinder.FindPath(fromPos, rightCandidate);
+        p2 = pathfinder.FindPath(rightCandidate, exitPos);
+        if (p1 != null && p1.Count > 0 && p2 != null && p2.Count > 0)
+        {
+            List<Vector3> combined = new List<Vector3>(p1);
+            if (p2.Count > 0)
+            {
+                Vector3 firstOfP2 = p2[0];
+                if (combined.Count > 0 && Vector3.Distance(combined[combined.Count - 1], firstOfP2) < 0.01f)
+                {
+                    for (int i = 1; i < p2.Count; i++) combined.Add(p2[i]);
+                }
+                else combined.AddRange(p2);
+            }
+            return combined;
+        }
+
+        // fallback: try firstStepPoint without lateral offset
+        p1 = pathfinder.FindPath(fromPos, firstStepPoint);
+        p2 = pathfinder.FindPath(firstStepPoint, exitPos);
+        if (p1 != null && p1.Count > 0 && p2 != null && p2.Count > 0)
+        {
+            List<Vector3> combined = new List<Vector3>(p1);
+            if (p2.Count > 0)
+            {
+                Vector3 firstOfP2 = p2[0];
+                if (combined.Count > 0 && Vector3.Distance(combined[combined.Count - 1], firstOfP2) < 0.01f)
+                {
+                    for (int i = 1; i < p2.Count; i++) combined.Add(p2[i]);
+                }
+                else combined.AddRange(p2);
+            }
+            return combined;
+        }
+
+        // couldn't build a multi-leg path — return null so caller can fall back to direct path
+        return null;
+    }
+
 
     #region Animator helpers
     void UpdateAnimatorWalking(bool walking) { if (animator != null) animator.SetBool("isWalking", walking); }
