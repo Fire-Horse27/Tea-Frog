@@ -261,7 +261,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 59657792}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -351,7 +351,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91120885}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -4842,7 +4842,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044201865}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -5655,7 +5655,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6980656391432252760, guid: 789a39ea18583494f93b837e99a30359, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7181906399236507884, guid: 789a39ea18583494f93b837e99a30359, type: 3}
       propertyPath: m_Name
@@ -5763,8 +5763,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71258cc9c85f65c45a7dbfd27c9110e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomerTriggerAvoidance
-  tileStep: 1
-  retryInterval: 0.25
 --- !u!1 &1202679380
 GameObject:
   m_ObjectHideFlags: 0
@@ -7588,7 +7586,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1429455987}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -11744,7 +11742,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978008346}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -12014,7 +12012,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2055308264}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -12364,10 +12362,6 @@ PrefabInstance:
     - target: {fileID: 6497076072928423347, guid: 789a39ea18583494f93b837e99a30359, type: 3}
       propertyPath: m_Radius
       value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6980656391432252760, guid: 789a39ea18583494f93b837e99a30359, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7181906399236507884, guid: 789a39ea18583494f93b837e99a30359, type: 3}
       propertyPath: m_Name

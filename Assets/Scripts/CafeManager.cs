@@ -30,13 +30,55 @@ public class CafeManager : MonoBehaviour
     void UpdateQueuePositions()
     {
         int i = 0;
+
+        // Track which queue spots are currently occupied
+        bool[] spotOccupied = new bool[queuePoints.Length];
+
+        // Mark any queue point that already has a frog standing near it
         foreach (var frog in waitingQueue)
         {
-            frog.SetQueueIndex(i);
-            i++;
-            Debug.Log(frog + " made it to " + i + " spot in the queue");
+            for (int j = 0; j < queuePoints.Length; j++)
+            {
+                if (Vector3.Distance(frog.transform.position, queuePoints[j].position) < 0.1f)
+                {
+                    spotOccupied[j] = true;
+                    break;
+                }
+            }
+        }
+
+        // Now assign queue indexes only to open spots
+        foreach (var frog in waitingQueue)
+        {
+            // Skip if the frog already has a queue spot assigned and is still there
+            bool alreadyInSpot = false;
+            for (int j = 0; j < queuePoints.Length; j++)
+            {
+                if (Vector3.Distance(frog.transform.position, queuePoints[j].position) < 0.1f)
+                {
+                    alreadyInSpot = true;
+                    break;
+                }
+            }
+            if (alreadyInSpot) continue;
+
+            // Find the next open queue spot
+            while (i < queuePoints.Length && spotOccupied[i]) i++;
+
+            if (i < queuePoints.Length)
+            {
+                frog.SetQueueIndex(i);
+                spotOccupied[i] = true;
+                Debug.Log($"{frog.name} moved to queue spot {i + 1}");
+                i++;
+            }
+            else
+            {
+                Debug.Log($"{frog.name} cannot move forward — all queue spots are full");
+            }
         }
     }
+
 
     public bool TryAssignSeat(FrogAI frog, out Seat seat)
     {
