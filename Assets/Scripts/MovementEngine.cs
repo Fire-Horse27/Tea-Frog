@@ -236,7 +236,7 @@ public class MovementEngine : MonoBehaviour
 
         bool useVertical = Mathf.Abs(dir.y) > Mathf.Abs(dir.x);
 
-        Sprite chosen = null;
+        //Sprite chosen = null;
 
         if (useVertical)
         {

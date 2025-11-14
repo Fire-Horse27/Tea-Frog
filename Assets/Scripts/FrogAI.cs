@@ -20,6 +20,7 @@ public class FrogAI : MonoBehaviour
     public float servedLinger = 0.6f;     // time to stay after being served
     public bool orderTaken = false;       // has the player acknowledged the order
     public bool receivedOrder = false;    // has the tea been delievered
+    private bool playerInRange = false;
 
     [Header("Optional")]
     public Animator animator;             // assign if you have animations
@@ -249,6 +250,12 @@ public class FrogAI : MonoBehaviour
 
     void Update()
     {
+        if (playerInRange && Input.GetKeyDown(KeyCode.E))
+        {
+            orderTaken = true;
+            Debug.Log($"{name} has been served!");
+        }
+
         // Follow path if one exists
         if (path != null && pathIndex < path.Count)
         {
@@ -378,6 +385,9 @@ public class FrogAI : MonoBehaviour
             CafeManager.Instance.NotifySeatFreed(assignedSeat);
             assignedSeat = null;
         }
+
+        orderTaken = false;
+
     }
 
     #region Animator helpers
@@ -397,4 +407,23 @@ public class FrogAI : MonoBehaviour
         animator.SetTrigger("isHappy");
     }
     #endregion
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = true;
+            Debug.Log($"Player entered {name}'s trigger.");
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
+            Debug.Log($"Player left {name}'s trigger.");
+        }
+    }
+
 }
