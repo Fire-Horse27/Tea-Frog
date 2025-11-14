@@ -93,7 +93,7 @@ public class Spawner : MonoBehaviour
         // start AI
         frog.InitializeNew();
 
-        Debug.Log($"Spawned {frog.name} (active={activeCount + 1}) and sent to counter.", frog);
+        //Debug.Log($"Spawned {frog.name} (active={activeCount + 1}) and sent to counter.", frog);
     }
 
     FrogAI GetFromPool()

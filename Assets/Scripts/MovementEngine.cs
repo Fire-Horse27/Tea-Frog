@@ -7,13 +7,13 @@ public class MovementEngine : MonoBehaviour
 {
     [Header("Small Leap")]
     public float smallLeapDistance = 0.6f;
-    public float smallLeapDuration = 0.14f;
-    public float smallCooldown = 0.1f;
+    public float smallLeapDuration = 0.15f;
+    public float smallCooldown = 0.3f;
 
     [Header("Large Leap")]
     public float largeLeapDistance = 1.2f;
-    public float largeLeapDuration = 0.12f;
-    public float largeCooldown = 0.1f;
+    public float largeLeapDuration = 0.2f;
+    public float largeCooldown = 0.3f;
 
     [Header("Timing")]
     public float chargeTime = 0.20f;
