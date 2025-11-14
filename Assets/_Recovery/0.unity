@@ -449,10 +449,10 @@ MonoBehaviour:
   frogPrefab: {fileID: 1180654182}
   poolSize: 10
   spawnPoint: {fileID: 1409660897}
-  counterPoint: {fileID: 1044201866}
+  counterPoint: {fileID: 2055308265}
   exitPoint: {fileID: 0}
-  maxActiveFrogs: 6
-  spawnInterval: 5
+  maxActiveFrogs: 5
+  spawnInterval: 4
   frogColors: []
 --- !u!1 &177838948
 GameObject:
@@ -1948,7 +1948,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.7777777
+  orthographic size: 5.148148
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6300,7 +6300,6 @@ MonoBehaviour:
   receivedOrder: 0
   animator: {fileID: 0}
   counterPoint: {fileID: 0}
-  queueIndex: -1
 --- !u!212 &1180654184
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10917,13 +10916,12 @@ MonoBehaviour:
   - {fileID: 1231793949}
   - {fileID: 273440586}
   queuePoints:
-  - {fileID: 2055308265}
-  - {fileID: 1429455988}
-  - {fileID: 91120886}
-  - {fileID: 59657793}
-  - {fileID: 1978008347}
   - {fileID: 1044201866}
-  queueOccupant: []
+  - {fileID: 1978008347}
+  - {fileID: 59657793}
+  - {fileID: 91120886}
+  - {fileID: 1429455988}
+  - {fileID: 2055308265}
 --- !u!1 &1670115945
 GameObject:
   m_ObjectHideFlags: 0

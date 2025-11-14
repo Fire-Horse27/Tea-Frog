@@ -72,7 +72,7 @@ public class Cashregister : MonoBehaviour
             // If front customer is eligible, take their order (highest priority).
             if (frontEligible && frontFrog != null)
             {
-                frontFrog.TakeOrderByPlayer();
+                //frontFrog.TakeOrderByPlayer();
                 return;
             }
         }
