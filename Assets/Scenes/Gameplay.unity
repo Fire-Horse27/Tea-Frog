@@ -6264,7 +6264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FrogAI
   speed: 2
   arriveThreshold: 0.06
-  orderTime: 8
+  orderTime: 1
   servedLinger: 0.6
   orderTaken: 0
   receivedOrder: 0

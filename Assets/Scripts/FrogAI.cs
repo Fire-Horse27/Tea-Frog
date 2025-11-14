@@ -253,7 +253,7 @@ public class FrogAI : MonoBehaviour
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             orderTaken = true;
-            Debug.Log($"{name} has been served!");
+            Debug.Log($"{name}'s order has been taken!");
         }
 
         // Follow path if one exists
@@ -279,6 +279,10 @@ public class FrogAI : MonoBehaviour
                     // leave unsatisfied
                     StartCoroutine(LeaveRoutine());
                 }
+            }
+            else if (served)
+            {
+                StartCoroutine(LeaveRoutine());
             }
         }
     }
