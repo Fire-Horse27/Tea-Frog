@@ -17,6 +17,7 @@ public class EButtonRegistrar : MonoBehaviour
     {
         // Register the shared button reference for all GrabItem scripts
         GrabItem.Button = transform;
+        Cashregister.Button = transform;
 
         // Cache SpriteRenderer
         sr = GetComponent<SpriteRenderer>();

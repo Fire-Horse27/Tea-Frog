@@ -50,6 +50,11 @@ public class FrogAI : MonoBehaviour
         served = false;
         assignedSeat = null;
         queueIndex = -1;
+
+        // Ensure order state is reset when the frog (re)appears at the door/spawn.
+        orderTaken = false;
+        receivedOrder = false;
+        orderTimer = orderTime;
     }
 
     /// <summary>
@@ -101,6 +106,10 @@ public class FrogAI : MonoBehaviour
 
     /// <summary>
     /// Assign frogs to queue spots in queue order and reserve spots immediately in CafeManager.
+    /// This implementation ties each frog's queueIndex to its index in sharedQueue:
+    /// sharedQueue[0] => front of queue; mapping to the front-most queuePoint.
+    /// It deterministically attempts to reserve the matching spot in the CafeManager;
+    /// if reservation fails, it searches for an alternate free spot, otherwise falls back.
     /// </summary>
     private static void UpdateQueuePositions()
     {
@@ -109,91 +118,87 @@ public class FrogAI : MonoBehaviour
         Transform[] queuePoints = (CafeManager.Instance != null) ? CafeManager.Instance.queuePoints : null;
         int spotCount = (queuePoints != null) ? queuePoints.Length : 0;
 
-        // fallback if no queuePoints
+        // Fallback if no queuePoints: map index -> fallback position
         if (spotCount == 0)
         {
-            var fallbackList = new List<FrogAI>(sharedQueue);
-            for (int k = 0; k < fallbackList.Count; k++)
+            for (int i = 0; i < sharedQueue.Count; i++)
             {
-                var f = fallbackList[k];
+                var f = sharedQueue[i];
                 if (f == null) continue;
-                f.queueIndex = k;
-                f.MoveTo(ComputeFallbackQueuePosition(f, k));
+                f.queueIndex = i;
+                f.MoveTo(ComputeFallbackQueuePosition(f, i));
             }
             return;
         }
 
-        const float atSpotThreshold = 0.18f;
-
-        // mark physically occupied spots
-        bool[] physicallyOccupied = new bool[spotCount];
-        for (int i = 0; i < sharedQueue.Count; i++)
-        {
-            var frog = sharedQueue[i];
-            if (frog == null) continue;
-            for (int s = 0; s < spotCount; s++)
-            {
-                if (Vector3.Distance(frog.transform.position, queuePoints[s].position) < atSpotThreshold)
-                {
-                    physicallyOccupied[s] = true;
-                    frog.queueIndex = s;
-                    break;
-                }
-            }
-        }
-
-        // Assign spots in queue order (sharedQueue[0] is front)
-        int nextSpot = spotCount - 1; // front-most index (last element)
+        // For each frog in queue order, compute the desired spot index.
+        // Convention preserved: the "front" of queue maps to the last queue point (spotCount - 1).
         for (int q = 0; q < sharedQueue.Count; q++)
         {
             var frog = sharedQueue[q];
             if (frog == null) continue;
 
-            // skip if frog already at any spot
-            bool alreadyAtSpot = false;
-            for (int s = 0; s < spotCount; s++)
+            int desiredSpot = Mathf.Clamp(spotCount - 1 - q, 0, spotCount - 1);
+            int chosenSpot = -1;
+
+            // If this frog previously reserved a different spot, free it first (so reservations stay accurate).
+            if (CafeManager.Instance != null && frog.queueIndex >= 0 && frog.queueIndex != desiredSpot)
             {
-                if (Vector3.Distance(frog.transform.position, queuePoints[s].position) < atSpotThreshold)
+                CafeManager.Instance.FreeQueueSpot(frog.queueIndex, frog);
+            }
+
+            // Try to reserve the desired spot (or reuse if already ours).
+            if (CafeManager.Instance != null)
+            {
+                // If the spot is already occupied by someone else, we'll search for next best below.
+                var occupant = CafeManager.Instance.queueOccupant[desiredSpot];
+                if (occupant == null || occupant == frog)
                 {
-                    alreadyAtSpot = true;
-                    frog.queueIndex = s;
-                    break;
+                    // TryReserve is idempotent and will succeed if the spot is free or already ours.
+                    if (CafeManager.Instance.TryReserveQueueSpot(desiredSpot, frog))
+                    {
+                        chosenSpot = desiredSpot;
+                    }
+                }
+
+                // If we couldn't reserve desiredSpot, find the nearest available spot searching downward.
+                if (chosenSpot == -1)
+                {
+                    for (int s = desiredSpot; s >= 0; s--)
+                    {
+                        var occ = CafeManager.Instance.queueOccupant[s];
+                        if (occ == null || occ == frog)
+                        {
+                            if (CafeManager.Instance.TryReserveQueueSpot(s, frog))
+                            {
+                                chosenSpot = s;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-            if (alreadyAtSpot) continue;
-
-            // find next unreserved & unoccupied spot
-            while (nextSpot >= 0)
+            else
             {
-                if (physicallyOccupied[nextSpot]) { nextSpot--; continue; }
+                // No CafeManager: just use desired spot index for movement mapping
+                chosenSpot = desiredSpot;
+            }
 
-                // check reservation in manager
-                bool reserved = true;
-                if (CafeManager.Instance != null)
-                {
-                    // if someone else reserved it, skip
-                    var occupant = CafeManager.Instance.queueOccupant[nextSpot];
-                    if (occupant != null && occupant != frog)
-                    {
-                        nextSpot--;
-                        continue;
-                    }
+            // If still no chosen spot (all reservations failed), fall back to desiredSpot for movement but do not reserve.
+            if (chosenSpot == -1)
+            {
+                chosenSpot = desiredSpot;
+            }
 
-                    // try to reserve it (idempotent)
-                    reserved = CafeManager.Instance.TryReserveQueueSpot(nextSpot, frog);
-                    if (!reserved)
-                    {
-                        nextSpot--;
-                        continue;
-                    }
-                }
-
-                // assign to frog
-                frog.queueIndex = nextSpot;
-                frog.MoveTo(queuePoints[nextSpot].position);
-                physicallyOccupied[nextSpot] = true; // avoid reusing within same frame
-                nextSpot--;
-                break;
+            // Assign and instruct movement
+            frog.queueIndex = chosenSpot;
+            if (chosenSpot >= 0 && chosenSpot < spotCount)
+            {
+                frog.MoveTo(queuePoints[chosenSpot].position);
+            }
+            else
+            {
+                frog.MoveTo(ComputeFallbackQueuePosition(frog, q));
             }
         }
     }
@@ -350,6 +355,7 @@ public class FrogAI : MonoBehaviour
         }
     }
 
+    // Replace the existing OnReachedPathEnd() with this:
     void OnReachedPathEnd()
     {
         UpdateAnimatorWalking(false);
@@ -371,22 +377,15 @@ public class FrogAI : MonoBehaviour
                     return;
                 }
 
-                // If order has already been taken (player interacted while we were approaching)
-                if (orderTaken)
+                // NOTE: Do NOT auto-update path/assign seat here based on orderTaken.
+                // The seat assignment will happen only when OrderTakenByPlayer() is called.
+                // If order hasn't been taken, become front of the queue and wait.
+                if (!sharedQueue.Contains(this))
                 {
-                    if (CafeManager.Instance.TryAssignSeat(this, out Seat seat)) { AssignSeat(seat); }
-                    else { JoinQueue(); }
+                    sharedQueue.Insert(0, this);
+                    UpdateQueuePositions();
                 }
-                else
-                {
-                    // If no order yet and no one else is occupying the counter, we should become the front-of-line.
-                    if (!sharedQueue.Contains(this))
-                    {
-                        sharedQueue.Insert(0, this);
-                        UpdateQueuePositions();
-                    }
-                    // Remain at counter waiting for player to take order.
-                }
+                // Remain at counter waiting for the player's interaction.
                 return;
             }
             else
@@ -406,6 +405,51 @@ public class FrogAI : MonoBehaviour
             transform.position = new Vector3(seat.x, seat.y, transform.position.z);
             StartCoroutine(SeatedRoutine());
             return;
+        }
+    }
+
+    /// <summary>
+    /// Called when the player attempts to take this frog's order.
+    /// Only proceeds if the frog is physically at the counter. If not at the
+    /// counter, nothing happens (order is not marked taken).
+    /// </summary>
+    public void OrderTakenByPlayer()
+    {
+        // Only allow taking the order if the frog is actually at the counter.
+        if (!IsAtCounter())
+        {
+            // Safety: do nothing if not at counter. Cashregister normally
+            // prevents calling this when not at counter, but enforce here too.
+            return;
+        }
+
+        // If someone else is front and at counter (not this frog), don't steal the turn.
+        FrogAI currentFront = GetFrontOfQueue();
+        if (currentFront != null && currentFront != this && currentFront.IsAtCounter())
+        {
+            // Not our turn — do nothing.
+            return;
+        }
+
+        // Mark that this frog's order has been taken.
+        orderTaken = true;
+
+        // Remove reservations / queue entry if any.
+        if (sharedQueue.Contains(this))
+        {
+            if (GetFrontOfQueue() == this) PopFrontOfQueue();
+            else RemoveFromQueue(this);
+        }
+
+        // Try to assign a seat immediately.
+        if (CafeManager.Instance != null && CafeManager.Instance.TryAssignSeat(this, out Seat seat))
+        {
+            AssignSeat(seat);
+        }
+        else
+        {
+            // If no seat available, keep expected behavior (join queue).
+            JoinQueue();
         }
     }
 

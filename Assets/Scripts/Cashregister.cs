@@ -30,8 +30,6 @@ public class Cashregister : MonoBehaviour
 
     void Update()
     {
-        //if (playerTransform == null || Button == null) return;
-
         bool playerInside = col.OverlapPoint(playerTransform.position);
 
         // Find the front-of-queue frog (FrogAI provides a static helper).
@@ -44,11 +42,8 @@ public class Cashregister : MonoBehaviour
         if (frontFrog != null)
         {
             // Use frog's IsAtCounter to decide if it's physically at the counter
-            //frontEligible = frontFrog.IsAtCounter(registerCounterTolerance) && !frontFrog.orderTaken;
-            frontEligible = true;
+            frontEligible = frontFrog.IsAtCounter(registerCounterTolerance) && !frontFrog.orderTaken;
         }
-
-        //Debug.Log(frontEligible);
 
         // Show prompt when player inside and (a) frontEligible OR (b) fallback legacy behavior (item interactions)
         if (playerInside && frontEligible)
@@ -71,7 +66,9 @@ public class Cashregister : MonoBehaviour
             // If front customer is eligible, take their order (highest priority).
             if (frontEligible && frontFrog != null)
             {
-                //frontFrog.TakeOrderByPlayer();
+                frontFrog.OrderTakenByPlayer();
+                showingPrompt = false;
+                Button.gameObject.SetActive(false);
                 return;
             }
         }

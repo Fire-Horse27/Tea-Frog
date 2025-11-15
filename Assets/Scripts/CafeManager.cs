@@ -5,6 +5,8 @@ using UnityEngine;
 /// <summary>
 /// Cafe manager that coordinates seats and a reserved queue.
 /// Ensure queuePoints is ordered back -> front (last element sits at the counter).
+/// Simplified with the assumption: queued frogs <= seats available.
+/// Seating only happens when a frog's order is taken (TryAssignSeat is called for that frog).
 /// </summary>
 public class CafeManager : MonoBehaviour
 {
@@ -96,6 +98,8 @@ public class CafeManager : MonoBehaviour
 
     /// <summary>
     /// Finds first free seat and reserves it. Returns true and the seat if found.
+    /// Under your assumption (queued frogs <= seats) this should generally always succeed
+    /// when called as a result of servicing a frog at the counter.
     /// </summary>
     public bool TryAssignSeat(FrogAI frog, out Seat seat)
     {
@@ -116,19 +120,20 @@ public class CafeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Called by Frog when a seat is freed. Immediately seat the next frog from the queue (if any).
+    /// Called by Frog when a seat is freed.
+    /// IMPORTANT: do NOT auto-seat from here anymore.
+    /// Seating happens only when a frog's order is taken (TryAssignSeat is called).
     /// </summary>
     public void NotifySeatFreed(Seat s)
     {
         if (s == null) return;
+
+        // mark seat free
         s.Free();
 
-        // Seat the next frog from shared queue if present
-        FrogAI next = FrogAI.PopFrontOfQueue();
-        if (next != null)
-        {
-            next.AssignSeat(s);
-        }
+        // DO NOT assign the next frog here. Under the "queued frogs <= seats" assumption
+        // the seat will be immediately claimed when a frog's OrderTakenByPlayer() calls
+        // TryAssignSeat(this, out seat). This prevents non-served frogs from being moved.
     }
 
     #endregion
@@ -148,6 +153,7 @@ public class CafeManager : MonoBehaviour
     /// <summary>
     /// Player calls this to serve the nearest frog at the counter (within radius).
     /// Returns true when served.
+    /// This method will try to seat the frog being served (only that frog).
     /// </summary>
     public bool ServeNearestAtCounter(Vector3 playerPos, float serveRadius = 1.6f)
     {
@@ -168,7 +174,7 @@ public class CafeManager : MonoBehaviour
         // remove from counter list
         counterList.Remove(nearest);
 
-        // try to seat, otherwise enqueue
+        // try to seat this frog (only this frog), otherwise re-enqueue
         if (TryAssignSeat(nearest, out Seat seat))
         {
             nearest.AssignSeat(seat);
@@ -178,7 +184,7 @@ public class CafeManager : MonoBehaviour
             Enqueue(nearest);
         }
 
-        // mark as served
+        // mark as served (frog will call Serve/Seated routine/etc)
         nearest.Serve();
         return true;
     }
