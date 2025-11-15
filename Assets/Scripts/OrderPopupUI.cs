@@ -1,10 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-/// <summary>
-/// Attach to a Canvas in the scene. Configure the panel and sprite references in inspector.
-/// The script will show the panel when the player is near a frog and update visuals from CustomerOrder.
-/// </summary>
 public class OrderPopupUI : MonoBehaviour
 {
     [Header("Player / detection")]
@@ -13,7 +10,7 @@ public class OrderPopupUI : MonoBehaviour
 
     [Header("UI references (panel children)")]
     public GameObject panelRoot;            // the panel GameObject to enable/disable
-    public Text orderText;                  // text field that shows human-readable order
+    public TMP_Text orderText;              // TextMeshPro text showing order
     public Image teaFillImage;              // bottom layer: tea color/texture
     public Image cupImage;                  // middle layer: cup sprite (mug/glass)
     public Image milkOverlay;               // top layers for extras (enable/disable)
@@ -21,76 +18,129 @@ public class OrderPopupUI : MonoBehaviour
     public Image iceOverlay;
 
     [Header("Sprites (map assets)")]
-    public Sprite mugSprite;                // e.g. Tea Cup sprite
-    public Sprite glassSprite;              // Glass sprite
-    public Sprite[] teaFillSprites;         // same order as teaColors array used by CustomerOrder
-    public string[] teaColorNames;          // must match index with teaFillSprites
+    public Sprite mugSprite;
+    public Sprite glassSprite;
+    public Sprite[] teaFillSprites;
+    public string[] teaColorNames;
 
-    public Sprite milkSprite;               // overlay sprite for milk
-    public Sprite honeySprite;              // overlay sprite for honey
-    public Sprite iceSprite;                // overlay sprite for ice cubes
+    public Sprite milkSprite;
+    public Sprite honeySprite;
+    public Sprite iceSprite;
+
+    [Header("Optional: make popup follow frog")]
+    public Camera worldCamera;              // set main camera if using world->screen positioning
+    public RectTransform panelRect;         // panel RectTransform (OrderPanel)
+
+    // internal state to avoid repeated SetActive calls spam
+    private bool panelVisible = false;
 
     void Start()
     {
+        // Basic reference checks
+        if (player == null) Debug.LogWarning("[OrderPopupUI] player reference is NULL. Assign your player Transform in inspector.", this);
+        if (panelRoot == null) Debug.LogWarning("[OrderPopupUI] panelRoot reference is NULL. Assign OrderPanel in inspector.", this);
+        if (orderText == null) Debug.LogWarning("[OrderPopupUI] orderText (TMP) is NULL. Assign OrderText (TextMeshPro) in inspector.", this);
+        if (teaFillImage == null) Debug.LogWarning("[OrderPopupUI] teaFillImage is NULL. Assign TeaFillImage UI Image in inspector.", this);
+        if (cupImage == null) Debug.LogWarning("[OrderPopupUI] cupImage is NULL. Assign CupImage UI Image in inspector.", this);
+
+        // hide panel at start
         if (panelRoot != null) panelRoot.SetActive(false);
+        panelVisible = false;
     }
 
     void Update()
     {
-        if (player == null) return;
-
-        // find nearest frog within radius
-        FrogAI nearest = FindNearestFrog(player.position, showRadius);
-        if (nearest == null)
+        // quick safety: do nothing if required references missing
+        if (player == null || panelRoot == null)
         {
-            if (panelRoot != null && panelRoot.activeSelf) panelRoot.SetActive(false);
+            // still attempt to find player automatically (helpful if forgot to assign)
+            if (player == null)
+            {
+                var p = GameObject.FindWithTag("Player");
+                if (p != null) { player = p.transform; Debug.Log("[OrderPopupUI] Auto-assigned player from tag 'Player'.", this); }
+            }
             return;
         }
 
-        // Get its CustomerOrder
+        // find nearest frog in radius
+        FrogAI nearest = FindNearestFrog(player.position, showRadius);
+
+        if (nearest == null)
+        {
+            // hide panel if it was shown
+            if (panelVisible)
+            {
+                panelRoot.SetActive(false);
+                panelVisible = false;
+                Debug.Log("[OrderPopupUI] No frog within range -> hiding panel.", this);
+            }
+            return;
+        }
+
+        // found a frog. debug log (not every frame)
+        // show details once when it becomes active or new frog changes
+        if (!panelVisible)
+        {
+            Debug.Log($"[OrderPopupUI] Nearest frog: {nearest.name} at distance {Vector3.Distance(player.position, nearest.transform.position):F2}", this);
+        }
+
+        // get order
         var co = nearest.GetComponent<CustomerOrder>();
         if (co == null)
         {
-            if (panelRoot != null && panelRoot.activeSelf) panelRoot.SetActive(false);
+            Debug.LogWarning("[OrderPopupUI] nearest frog has no CustomerOrder component.", nearest);
+            if (panelVisible) { panelRoot.SetActive(false); panelVisible = false; }
             return;
         }
 
-        // Show panel
-        if (panelRoot != null && !panelRoot.activeSelf) panelRoot.SetActive(true);
+        // show panel and update UI only when necessary
+        if (!panelVisible)
+        {
+            panelRoot.SetActive(true);
+            panelVisible = true;
+        }
 
-        // Update text
+        // update text (safe check)
         if (orderText != null) orderText.text = co.GetOrderString();
 
-        // Update composed image
-        // 1) tea fill (match color name -> sprite)
-        string color = co.order.teaColor;
-        Sprite fill = FindFillSpriteForColor(color);
+        // update sprites: tea fill
+        Sprite fill = FindFillSpriteForColor(co.order.teaColor);
         if (teaFillImage != null) { teaFillImage.sprite = fill; teaFillImage.enabled = (fill != null); }
 
-        // 2) cup sprite
+        // cup sprite
         Sprite cup = (co.order.cupType == "Glass") ? glassSprite : mugSprite;
         if (cupImage != null) { cupImage.sprite = cup; cupImage.enabled = (cup != null); }
 
-        // 3) extras overlays
+        // extras
         if (milkOverlay != null) { milkOverlay.sprite = milkSprite; milkOverlay.enabled = co.order.milk && milkSprite != null; }
         if (honeyOverlay != null) { honeyOverlay.sprite = honeySprite; honeyOverlay.enabled = co.order.honey && honeySprite != null; }
         if (iceOverlay != null) { iceOverlay.sprite = iceSprite; iceOverlay.enabled = co.order.ice && iceSprite != null; }
+
+        // optional: move panel to follow frog's screen position
+        if (panelRect != null && worldCamera != null && nearest != null)
+        {
+            Vector3 worldPos = nearest.transform.position + Vector3.up * 1.2f;
+            Vector3 screenPos = worldCamera.WorldToScreenPoint(worldPos);
+            panelRect.position = screenPos;
+        }
     }
 
     FrogAI FindNearestFrog(Vector3 origin, float radius)
     {
         FrogAI[] frogs = GameObject.FindObjectsOfType<FrogAI>();
         FrogAI best = null;
-        float bestD = float.MaxValue;
-        float r2 = radius * radius;
+        float bestD2 = radius * radius;
         foreach (var f in frogs)
         {
             if (f == null) continue;
             float d2 = (f.transform.position - origin).sqrMagnitude;
-            if (d2 <= r2 && d2 < bestD)
+            if (d2 <= bestD2)
             {
-                best = f;
-                bestD = d2;
+                // we prefer the closest
+                if (best == null || d2 < (best.transform.position - origin).sqrMagnitude)
+                {
+                    best = f;
+                }
             }
         }
         return best;
@@ -103,10 +153,10 @@ public class OrderPopupUI : MonoBehaviour
         {
             for (int i = 0; i < teaColorNames.Length && i < teaFillSprites.Length; i++)
             {
-                if (teaColorNames[i] == colorName) return teaFillSprites[i];
+                if (teaColorNames[i].ToLower() == colorName.ToLower()) return teaFillSprites[i];
             }
         }
-        // fallback: try to parse by name matching (case insensitive)
+        // fallback: try contains match
         for (int i = 0; i < teaFillSprites.Length; i++)
         {
             if (teaFillSprites[i] != null && teaFillSprites[i].name.ToLower().Contains(colorName.ToLower()))
@@ -115,4 +165,3 @@ public class OrderPopupUI : MonoBehaviour
         return teaFillSprites[0];
     }
 }
-
