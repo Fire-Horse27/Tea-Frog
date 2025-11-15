@@ -1,9 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Tracks what the player is holding and exposes it as OrderData.
+/// Keeps your existing sprite enable/disable behavior but also records flags
+/// so we can compare against a Customer's order.
+/// </summary>
 public class HeldTea : MonoBehaviour
 {
-    public string cupHeld = "";
-    public string cupFilled = "";
+    public string cupHeld = "";   // "Glass" or "Tea" (mug)
+    public string cupFilled = ""; // "Tea", "Hot", "Water", etc.
+
+    // tracked extras
+    private bool hasMilk = false;
+    private bool hasHoney = false;
+    private bool hasIce = false;
+    private string currentTeaColor = ""; // e.g. "Green", "Black"
 
     void EnableSprite(string childName)
     {
@@ -63,6 +76,7 @@ public class HeldTea : MonoBehaviour
                 break;
 
             default:
+                // treat any other string as a tea color e.g. "Green", "Black"
                 SetTea(item);
                 break;
         }
@@ -76,29 +90,43 @@ public class HeldTea : MonoBehaviour
 
     void SetTea(string tea)
     {
-        if (cupFilled == "Water" || cupFilled == "Hot")
+        // Only set tea if a cup exists that accepts tea/water/hot behavior (keeps your original guards)
+        // We will set currentTeaColor so matching works.
+        if (cupFilled == "Water" || cupFilled == "Hot" || cupFilled == "" || cupFilled == "Tea")
         {
             EnableSprite(tea + " " + cupHeld);
             DisableSprite("Hot Tea");
             DisableSprite("Water Glass");
             cupFilled = "Tea";
+            currentTeaColor = tea;
         }
-            
     }
 
     void SetIce()
     {
-        if (cupHeld == "Glass") EnableSprite("Ice");
+        if (cupHeld == "Glass")
+        {
+            EnableSprite("Ice");
+            hasIce = true;
+        }
     }
 
     void SetHoney()
     {
-        if (cupFilled == "Tea") EnableSprite("Honey " + cupHeld);
+        if (cupFilled == "Tea")
+        {
+            EnableSprite("Honey " + cupHeld);
+            hasHoney = true;
+        }
     }
 
     void SetMilk()
     {
-        if (cupFilled == "Tea") EnableSprite("Milk " + cupHeld);
+        if (cupFilled == "Tea")
+        {
+            EnableSprite("Milk " + cupHeld);
+            hasMilk = true;
+        }
     }
 
     void SetHot()
@@ -107,6 +135,7 @@ public class HeldTea : MonoBehaviour
         {
             EnableSprite("Hot Tea");
             cupFilled = "Hot";
+            currentTeaColor = "Black"; // optional default for hot, or leave empty
         }
     }
 
@@ -116,6 +145,7 @@ public class HeldTea : MonoBehaviour
         {
             EnableSprite("Iced Tea");
             cupFilled = "Water";
+            currentTeaColor = "Green"; // optional default for iced, or leave empty
         }
     }
 
@@ -127,5 +157,37 @@ public class HeldTea : MonoBehaviour
         }
         cupFilled = "";
         cupHeld = "";
+        hasMilk = false;
+        hasHoney = false;
+        hasIce = false;
+        currentTeaColor = "";
+    }
+
+    // ----------------------
+    // Expose order information so we can compare to customer's order
+    // ----------------------
+    public OrderData GetOrderData()
+    {
+        OrderData od = new OrderData
+        {
+            cupType = cupHeld,
+            teaColor = currentTeaColor,
+            milk = hasMilk,
+            honey = hasHoney,
+            ice = hasIce
+        };
+        return od;
+    }
+
+    // Optional: helper to set precise order data (useful in testing / UI)
+    public void ApplyOrderData(OrderData od)
+    {
+        ClearEverything();
+
+        if (!string.IsNullOrEmpty(od.cupType)) SetCup(od.cupType);
+        if (!string.IsNullOrEmpty(od.teaColor)) SetTea(od.teaColor);
+        if (od.ice) SetIce();
+        if (od.honey) SetHoney();
+        if (od.milk) SetMilk();
     }
 }
