@@ -434,6 +434,8 @@ public class FrogAI : MonoBehaviour
         // Mark that this frog's order has been taken.
         orderTaken = true;
 
+        //yield return new WaitForSeconds(2);
+
         // Remove reservations / queue entry if any.
         if (sharedQueue.Contains(this))
         {

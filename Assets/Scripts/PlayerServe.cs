@@ -14,7 +14,7 @@ public class PlayerServe : MonoBehaviour
     {
         // try to find HeldTea on player
         heldTea = GetComponentInChildren<HeldTea>();
-        if (heldTea == null) Debug.LogWarning("PlayerServe: HeldTea not found on player children.");
+        //if (heldTea == null) Debug.LogWarning("PlayerServe: HeldTea not found on player children.");
     }
 
     void Update()
@@ -54,7 +54,7 @@ public class PlayerServe : MonoBehaviour
 
         if (best == null)
         {
-            Debug.Log("No frog to serve nearby.");
+            //Debug.Log("No frog to serve nearby.");
             return;
         }
 
@@ -62,7 +62,7 @@ public class PlayerServe : MonoBehaviour
         var co = best.GetComponent<CustomerOrder>();
         if (co == null)
         {
-            Debug.LogWarning("Target frog has no CustomerOrder component.");
+            //Debug.LogWarning("Target frog has no CustomerOrder component.");
             return;
         }
 
@@ -73,7 +73,7 @@ public class PlayerServe : MonoBehaviour
 
         if (match)
         {
-            Debug.Log($"Served {best.name} successfully! Order: {needed}");
+            //Debug.Log($"Served {best.name} successfully! Order: {needed}");
             // mark frog as served (this assumes FrogAI has Serve())
             best.Serve();
 
@@ -87,7 +87,7 @@ public class PlayerServe : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Wrong order for {best.name}. Needed: {needed}, Player offered: {playerOrder}");
+            //Debug.Log($"Wrong order for {best.name}. Needed: {needed}, Player offered: {playerOrder}");
             // optional: show UI feedback or negative reaction
         }
     }

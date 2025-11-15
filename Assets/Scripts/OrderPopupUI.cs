@@ -37,11 +37,11 @@ public class OrderPopupUI : MonoBehaviour
     void Start()
     {
         // Basic reference checks
-        if (player == null) Debug.LogWarning("[OrderPopupUI] player reference is NULL. Assign your player Transform in inspector.", this);
-        if (panelRoot == null) Debug.LogWarning("[OrderPopupUI] panelRoot reference is NULL. Assign OrderPanel in inspector.", this);
-        if (orderText == null) Debug.LogWarning("[OrderPopupUI] orderText (TMP) is NULL. Assign OrderText (TextMeshPro) in inspector.", this);
-        if (teaFillImage == null) Debug.LogWarning("[OrderPopupUI] teaFillImage is NULL. Assign TeaFillImage UI Image in inspector.", this);
-        if (cupImage == null) Debug.LogWarning("[OrderPopupUI] cupImage is NULL. Assign CupImage UI Image in inspector.", this);
+        //if (player == null) Debug.LogWarning("[OrderPopupUI] player reference is NULL. Assign your player Transform in inspector.", this);
+        //if (panelRoot == null) Debug.LogWarning("[OrderPopupUI] panelRoot reference is NULL. Assign OrderPanel in inspector.", this);
+        //if (orderText == null) Debug.LogWarning("[OrderPopupUI] orderText (TMP) is NULL. Assign OrderText (TextMeshPro) in inspector.", this);
+        //if (teaFillImage == null) Debug.LogWarning("[OrderPopupUI] teaFillImage is NULL. Assign TeaFillImage UI Image in inspector.", this);
+        //if (cupImage == null) Debug.LogWarning("[OrderPopupUI] cupImage is NULL. Assign CupImage UI Image in inspector.", this);
 
         // hide panel at start
         if (panelRoot != null) panelRoot.SetActive(false);
@@ -57,7 +57,7 @@ public class OrderPopupUI : MonoBehaviour
             if (player == null)
             {
                 var p = GameObject.FindWithTag("Player");
-                if (p != null) { player = p.transform; Debug.Log("[OrderPopupUI] Auto-assigned player from tag 'Player'.", this); }
+                if (p != null) { player = p.transform; }
             }
             return;
         }
@@ -65,30 +65,30 @@ public class OrderPopupUI : MonoBehaviour
         // find nearest frog in radius
         FrogAI nearest = FindNearestFrog(player.position, showRadius);
 
-        if (nearest == null)
+        if (nearest == null || nearest.orderTaken == false)
         {
             // hide panel if it was shown
             if (panelVisible)
             {
                 panelRoot.SetActive(false);
                 panelVisible = false;
-                Debug.Log("[OrderPopupUI] No frog within range -> hiding panel.", this);
+                //Debug.Log("[OrderPopupUI] No frog within range -> hiding panel.", this);
             }
             return;
         }
 
         // found a frog. debug log (not every frame)
         // show details once when it becomes active or new frog changes
-        if (!panelVisible)
-        {
-            Debug.Log($"[OrderPopupUI] Nearest frog: {nearest.name} at distance {Vector3.Distance(player.position, nearest.transform.position):F2}", this);
-        }
+        //if (!panelVisible)
+        //{
+        //    Debug.Log($"[OrderPopupUI] Nearest frog: {nearest.name} at distance {Vector3.Distance(player.position, nearest.transform.position):F2}", this);
+        //}
 
         // get order
         var co = nearest.GetComponent<CustomerOrder>();
         if (co == null)
         {
-            Debug.LogWarning("[OrderPopupUI] nearest frog has no CustomerOrder component.", nearest);
+            //Debug.LogWarning("[OrderPopupUI] nearest frog has no CustomerOrder component.", nearest);
             if (panelVisible) { panelRoot.SetActive(false); panelVisible = false; }
             return;
         }
