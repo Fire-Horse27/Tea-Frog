@@ -1942,6 +1942,8 @@ MonoBehaviour:
   itemID: Ice
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &509400728
 GameObject:
   m_ObjectHideFlags: 0
@@ -2411,6 +2413,8 @@ MonoBehaviour:
   itemID: Red
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &588906574
 GameObject:
   m_ObjectHideFlags: 0
@@ -2529,7 +2533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87e4538b24763d640abc8cf547922574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeldTea
-  cupHeld: 
+  cupHeld: 0
   cupFilled: 
 --- !u!1 &619394800
 GameObject:
@@ -3537,6 +3541,8 @@ MonoBehaviour:
   itemID: Hot
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &827703305
 GameObject:
   m_ObjectHideFlags: 0
@@ -5299,6 +5305,8 @@ MonoBehaviour:
   itemID: Black
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &1001192194
 GameObject:
   m_ObjectHideFlags: 0
@@ -6616,6 +6624,7 @@ GameObject:
   - component: {fileID: 1180654187}
   - component: {fileID: 1180654186}
   - component: {fileID: 1180654188}
+  - component: {fileID: 1180654189}
   m_Layer: 0
   m_Name: Customer
   m_TagString: Customer
@@ -6683,7 +6692,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FrogAI
   speed: 2
   arriveThreshold: 0.06
-  orderTime: 1
+  orderTime: 120
   servedLinger: 0.6
   orderTaken: 0
   receivedOrder: 0
@@ -6831,19 +6840,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomerOrder
   order:
-    cupType: 
-    teaColor: 
+    cupType: 0
+    teaType: 0
     milk: 0
     honey: 0
     ice: 0
-  teaColors:
-  - red tea
-  - blue tea
-  - green tea
-  - black tea
   chanceMilk: 0.35
   chanceHoney: 0.25
   chanceIce: 0.2
+--- !u!114 &1180654189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180654170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5885d82bd8fd53c4e91717f540c2c815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerServeInteract
+  buttonOffsetY: 0.8
+  serveKey: 101
 --- !u!1 &1202679380
 GameObject:
   m_ObjectHideFlags: 0
@@ -6997,6 +7015,8 @@ MonoBehaviour:
   itemID: Green
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &1216533367
 GameObject:
   m_ObjectHideFlags: 0
@@ -7440,6 +7460,8 @@ MonoBehaviour:
   itemID: Milk
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &1357352089
 GameObject:
   m_ObjectHideFlags: 0
@@ -11582,6 +11604,8 @@ MonoBehaviour:
   itemID: Blue
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &1705578756
 GameObject:
   m_ObjectHideFlags: 0
@@ -11839,6 +11863,8 @@ MonoBehaviour:
   itemID: Tea
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!61 &1770551561
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12157,6 +12183,8 @@ MonoBehaviour:
   itemID: Trashcan
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!61 &1806184608
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12720,6 +12748,8 @@ MonoBehaviour:
   itemID: Water
   promptOffsetY: 0.5
   showingPrompt: 0
+  defaultHotTea: 2
+  defaultIcedTea: 1
 --- !u!1 &1978008346
 GameObject:
   m_ObjectHideFlags: 0
@@ -13491,10 +13521,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6406ad4f2df47ea48b03d7f96bb86a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementEngine
-  smallLeapDistance: 0.6
+  smallLeapDistance: 0.3
   smallLeapDuration: 0.15
   smallCooldown: 0.3
-  largeLeapDistance: 1.2
+  largeLeapDistance: 1
   largeLeapDuration: 0.2
   largeCooldown: 0.3
   chargeTime: 0.2

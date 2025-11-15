@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -6,15 +6,18 @@ public class PlayerServe : MonoBehaviour
 {
     public KeyCode serveKey = KeyCode.E;
     public float serveRadius = 1.6f;
-    public LayerMask frogLayer = ~0; // optional: set a layer mask for frogs
+    public LayerMask frogLayer = ~0; // set to frog layer(s) in inspector to narrow physics query
 
     private HeldTea heldTea;
 
     void Awake()
     {
-        // try to find HeldTea on player
         heldTea = GetComponentInChildren<HeldTea>();
-        //if (heldTea == null) Debug.LogWarning("PlayerServe: HeldTea not found on player children.");
+        if (heldTea == null)
+        {
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) heldTea = p.GetComponentInChildren<HeldTea>();
+        }
     }
 
     void Update()
@@ -27,68 +30,133 @@ public class PlayerServe : MonoBehaviour
 
     void TryServeNearest()
     {
-        if (heldTea == null) return;
+        if (heldTea == null)
+        {
+            Debug.LogWarning("[PlayerServe] HeldTea component not found on player.");
+            return;
+        }
 
-        OrderData playerOrder = heldTea.GetOrderData();
+        // Are we actually holding a drink?
+        bool holdingDrink = (heldTea.teaType != null);
 
-        // find all FrogAI in scene and pick nearest that is at counter (or within radius)
-        FrogAI[] frogs = GameObject.FindObjectsOfType<FrogAI>();
+        // Use physics overlap to gather nearby frog candidates (use frogLayer if set)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, serveRadius, frogLayer);
+        FrogAI[] candidates = hits
+            .Select(h => h.GetComponent<FrogAI>())
+            .Where(f => f != null)
+            .ToArray();
+
+        // fallback to global scan if none found (handy for testing)
+        if (candidates.Length == 0)
+        {
+            candidates = GameObject.FindObjectsOfType<FrogAI>();
+        }
+
+        // filter out inactive and frogs parented to player
+        candidates = candidates
+            .Where(f => f != null && f.gameObject.activeInHierarchy)
+            .Where(f => !IsFrogPartOfPlayer(f))
+            .ToArray();
+
+        if (candidates.Length == 0)
+        {
+            return;
+        }
+
+        // pick best candidate: prefer counter frogs, otherwise nearest within radius
         FrogAI best = null;
         float bestDist = float.MaxValue;
 
-        foreach (var f in frogs)
+        foreach (var f in candidates)
         {
             if (f == null) continue;
-
-            // only consider frogs that are at the counter (waiting to be served) OR very near player
-            bool candidate = f.IsAtCounter() || Vector3.Distance(transform.position, f.transform.position) <= serveRadius;
-            if (!candidate) continue;
-
+            if (!f.IsAtCounter()) continue;
             float d = Vector3.Distance(transform.position, f.transform.position);
             if (d < bestDist)
             {
-                bestDist = d;
                 best = f;
+                bestDist = d;
             }
         }
 
         if (best == null)
         {
-            //Debug.Log("No frog to serve nearby.");
+            bestDist = float.MaxValue;
+            foreach (var f in candidates)
+            {
+                if (f == null) continue;
+                float d = Vector3.Distance(transform.position, f.transform.position);
+                if (d <= serveRadius && d < bestDist)
+                {
+                    best = f;
+                    bestDist = d;
+                }
+            }
+        }
+
+        if (best == null) return;
+
+        Debug.Log($"[PlayerServe] Selected frog: {best.name} (dist {Vector3.Distance(transform.position, best.transform.position):F2}). HoldingDrink={holdingDrink}");
+
+        // If player isn't holding a drink: attempt to take order (calls FrogAI.OrderTakenByPlayer())
+        if (!holdingDrink)
+        {
+            // Prefer calling the explicit method name your FrogAI defines
+            best.OrderTakenByPlayer();
             return;
         }
 
-        // get the frog's order (requires CustomerOrder component)
+        // Player is holding a drink -> compare orders
         var co = best.GetComponent<CustomerOrder>();
         if (co == null)
         {
-            //Debug.LogWarning("Target frog has no CustomerOrder component.");
+            Debug.LogWarning("[PlayerServe] Target frog has no CustomerOrder component.");
             return;
         }
 
+        OrderData playerOrder = heldTea.GetOrderData();
         OrderData needed = co.order;
 
-        // Compare
+        Debug.Log($"[PlayerServe] Comparing: Frog needs '{needed}', Player offers '{playerOrder}'.");
+
         bool match = needed.Matches(playerOrder);
 
         if (match)
         {
-            //Debug.Log($"Served {best.name} successfully! Order: {needed}");
-            // mark frog as served (this assumes FrogAI has Serve())
-            best.Serve();
+            // correct: try ForceServeAndLeave if present, otherwise Serve()
+            var method = best.GetType().GetMethod("ForceServeAndLeave");
+            if (method != null)
+            {
+                method.Invoke(best, null);
+            }
+            else
+            {
+                best.Serve();
+            }
 
-            // small cleanup: clear player's held tea
             heldTea.ClearEverything();
-
-            // optionally give the frog its seat here or let CafeManager handle it via TakeOrderByPlayer flow
-            // If your flow is: player presses E -> frog.TakeOrderByPlayer() -> assignment, call that:
-            // best.TakeOrderByPlayer(); // only if implemented/desired
-
+            Debug.Log($"[PlayerServe] Served {best.name} successfully.");
         }
         else
         {
-            //Debug.Log($"Wrong order for {best.name}. Needed: {needed}, Player offered: {playerOrder}");
-            // optional: show UI feedback or negative reaction
+            Debug.Log($"[PlayerServe] Wrong order for {best.name}.");
+            // TODO: show UI feedback / play sound, etc.
         }
+    }
+
+    bool IsFrogPartOfPlayer(FrogAI f)
+    {
+        if (f == null) return false;
+        if (f.gameObject == this.gameObject) return true;
+        if (f.transform.IsChildOf(this.transform)) return true;
+        var p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null && f.transform.IsChildOf(p.transform)) return true;
+        return false;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, serveRadius);
     }
 }

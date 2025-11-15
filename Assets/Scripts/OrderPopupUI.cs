@@ -21,7 +21,7 @@ public class OrderPopupUI : MonoBehaviour
     public Sprite mugSprite;
     public Sprite glassSprite;
     public Sprite[] teaFillSprites;
-    public string[] teaColorNames;
+    public string[] teaColorNames; // e.g. "red tea", "blue tea", "green tea", "black tea"
 
     public Sprite milkSprite;
     public Sprite honeySprite;
@@ -36,24 +36,14 @@ public class OrderPopupUI : MonoBehaviour
 
     void Start()
     {
-        // Basic reference checks
-        //if (player == null) Debug.LogWarning("[OrderPopupUI] player reference is NULL. Assign your player Transform in inspector.", this);
-        //if (panelRoot == null) Debug.LogWarning("[OrderPopupUI] panelRoot reference is NULL. Assign OrderPanel in inspector.", this);
-        //if (orderText == null) Debug.LogWarning("[OrderPopupUI] orderText (TMP) is NULL. Assign OrderText (TextMeshPro) in inspector.", this);
-        //if (teaFillImage == null) Debug.LogWarning("[OrderPopupUI] teaFillImage is NULL. Assign TeaFillImage UI Image in inspector.", this);
-        //if (cupImage == null) Debug.LogWarning("[OrderPopupUI] cupImage is NULL. Assign CupImage UI Image in inspector.", this);
-
-        // hide panel at start
         if (panelRoot != null) panelRoot.SetActive(false);
         panelVisible = false;
     }
 
     void Update()
     {
-        // quick safety: do nothing if required references missing
         if (player == null || panelRoot == null)
         {
-            // still attempt to find player automatically (helpful if forgot to assign)
             if (player == null)
             {
                 var p = GameObject.FindWithTag("Player");
@@ -62,53 +52,40 @@ public class OrderPopupUI : MonoBehaviour
             return;
         }
 
-        // find nearest frog in radius
         FrogAI nearest = FindNearestFrog(player.position, showRadius);
 
-        if (nearest == null || nearest.orderTaken == false)
+        // if no frog or frog isn't ready to show an order, hide
+        if (nearest == null || !nearest.orderTaken)
         {
-            // hide panel if it was shown
             if (panelVisible)
             {
                 panelRoot.SetActive(false);
                 panelVisible = false;
-                //Debug.Log("[OrderPopupUI] No frog within range -> hiding panel.", this);
             }
             return;
         }
 
-        // found a frog. debug log (not every frame)
-        // show details once when it becomes active or new frog changes
-        //if (!panelVisible)
-        //{
-        //    Debug.Log($"[OrderPopupUI] Nearest frog: {nearest.name} at distance {Vector3.Distance(player.position, nearest.transform.position):F2}", this);
-        //}
-
-        // get order
         var co = nearest.GetComponent<CustomerOrder>();
         if (co == null)
         {
-            //Debug.LogWarning("[OrderPopupUI] nearest frog has no CustomerOrder component.", nearest);
             if (panelVisible) { panelRoot.SetActive(false); panelVisible = false; }
             return;
         }
 
-        // show panel and update UI only when necessary
         if (!panelVisible)
         {
             panelRoot.SetActive(true);
             panelVisible = true;
         }
 
-        // update text (safe check)
         if (orderText != null) orderText.text = co.GetOrderString();
 
-        // update sprites: tea fill
-        Sprite fill = FindFillSpriteForColor(co.order.teaColor);
+        // --- TEA FILL sprite: use teaType enum to select matching sprite/index
+        Sprite fill = FindFillSpriteForTeaType(co.order.teaType);
         if (teaFillImage != null) { teaFillImage.sprite = fill; teaFillImage.enabled = (fill != null); }
 
         // cup sprite
-        Sprite cup = (co.order.cupType == "Glass") ? glassSprite : mugSprite;
+        Sprite cup = (co.order.cupType == CupType.Glass) ? glassSprite : mugSprite;
         if (cupImage != null) { cupImage.sprite = cup; cupImage.enabled = (cup != null); }
 
         // extras
@@ -136,7 +113,6 @@ public class OrderPopupUI : MonoBehaviour
             float d2 = (f.transform.position - origin).sqrMagnitude;
             if (d2 <= bestD2)
             {
-                // we prefer the closest
                 if (best == null || d2 < (best.transform.position - origin).sqrMagnitude)
                 {
                     best = f;
@@ -146,22 +122,32 @@ public class OrderPopupUI : MonoBehaviour
         return best;
     }
 
-    Sprite FindFillSpriteForColor(string colorName)
+    // Normalize teaColorNames entries and match against TeaType enum
+    Sprite FindFillSpriteForTeaType(TeaType tea)
     {
-        if (string.IsNullOrEmpty(colorName) || teaFillSprites == null || teaFillSprites.Length == 0) return null;
+        if (teaFillSprites == null || teaFillSprites.Length == 0) return null;
+
+        string key = tea.ToString().ToLowerInvariant(); // e.g. "red", "green"
         if (teaColorNames != null)
         {
             for (int i = 0; i < teaColorNames.Length && i < teaFillSprites.Length; i++)
             {
-                if (teaColorNames[i].ToLower() == colorName.ToLower()) return teaFillSprites[i];
+                if (string.IsNullOrEmpty(teaColorNames[i])) continue;
+                // normalize: remove "tea" and spaces
+                string norm = teaColorNames[i].ToLowerInvariant().Replace(" ", "").Replace("tea", "").Trim();
+                if (norm == key) return teaFillSprites[i];
             }
         }
-        // fallback: try contains match
+
+        // fallback: try to find a sprite whose filename contains the enum name
         for (int i = 0; i < teaFillSprites.Length; i++)
         {
-            if (teaFillSprites[i] != null && teaFillSprites[i].name.ToLower().Contains(colorName.ToLower()))
-                return teaFillSprites[i];
+            var s = teaFillSprites[i];
+            if (s == null) continue;
+            if (s.name.ToLowerInvariant().Contains(key)) return s;
         }
+
+        // last resort return index 0
         return teaFillSprites[0];
     }
 }

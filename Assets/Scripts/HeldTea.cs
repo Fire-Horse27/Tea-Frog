@@ -1,177 +1,85 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-/// <summary>
-/// Tracks what the player is holding and exposes it as OrderData.
-/// Keeps your existing sprite enable/disable behavior but also records flags
-/// so we can compare against a Customer's order.
-/// </summary>
 public class HeldTea : MonoBehaviour
 {
-    public string cupHeld = "";   // "Glass" or "Tea" (mug)
-    public string cupFilled = ""; // "Tea", "Hot", "Water", etc.
+    public CupType cupHeld = CupType.Tea;
+    public TeaType? teaType = null; // null = empty cup
+    private bool hasMilk;
+    private bool hasHoney;
+    private bool hasIce;
 
-    // tracked extras
-    private bool hasMilk = false;
-    private bool hasHoney = false;
-    private bool hasIce = false;
-    private string currentTeaColor = ""; // e.g. "Green", "Black"
+    // compatibility: some scripts still read/write cupFilled
+    public string cupFilled = "";
 
-    void EnableSprite(string childName)
+    void EnableSprite(string name)
     {
-        Transform t = transform.Find(childName);
-        if (t != null)
+        var t = transform.Find(name);
+        if (t)
         {
             var sr = t.GetComponent<SpriteRenderer>();
             if (sr != null) sr.enabled = true;
         }
-        else
-        {
-            Debug.LogWarning($"Child '{childName}' not found!");
-        }
     }
 
-    void DisableSprite(string childName)
+    void DisableSprite(string name)
     {
-        Transform t = transform.Find(childName);
-        if (t != null)
+        var t = transform.Find(name);
+        if (t)
         {
             var sr = t.GetComponent<SpriteRenderer>();
             if (sr != null) sr.enabled = false;
-        }
-        else
-        {
-            Debug.LogWarning($"Child '{childName}' not found!");
-        }
-    }
-
-    public void SetHeld(string item)
-    {
-        switch (item)
-        {
-            case "Glass":
-            case "Tea":
-                SetCup(item);
-                break;
-
-            case "Ice":
-                SetIce();
-                break;
-
-            case "Honey":
-                SetHoney();
-                break;
-
-            case "Milk":
-                SetMilk();
-                break;
-
-            case "Hot":
-                SetHot();
-                break;
-
-            case "Water":
-                SetWater();
-                break;
-
-            default:
-                // treat any other string as a tea color e.g. "Green", "Black"
-                SetTea(item);
-                break;
-        }
-    }
-
-    void SetCup(string cup)
-    {
-        cupHeld = cup;
-        EnableSprite(cup + " Cup");
-    }
-
-    void SetTea(string tea)
-    {
-        // Only set tea if a cup exists that accepts tea/water/hot behavior (keeps your original guards)
-        // We will set currentTeaColor so matching works.
-        if (cupFilled == "Water" || cupFilled == "Hot" || cupFilled == "" || cupFilled == "Tea")
-        {
-            EnableSprite(tea + " " + cupHeld);
-            DisableSprite("Hot Tea");
-            DisableSprite("Water Glass");
-            cupFilled = "Tea";
-            currentTeaColor = tea;
-        }
-    }
-
-    void SetIce()
-    {
-        if (cupHeld == "Glass")
-        {
-            EnableSprite("Ice");
-            hasIce = true;
-        }
-    }
-
-    void SetHoney()
-    {
-        if (cupFilled == "Tea")
-        {
-            EnableSprite("Honey " + cupHeld);
-            hasHoney = true;
-        }
-    }
-
-    void SetMilk()
-    {
-        if (cupFilled == "Tea")
-        {
-            EnableSprite("Milk " + cupHeld);
-            hasMilk = true;
-        }
-    }
-
-    void SetHot()
-    {
-        if (cupHeld == "Tea" && cupFilled == "")
-        {
-            EnableSprite("Hot Tea");
-            cupFilled = "Hot";
-            currentTeaColor = "Black"; // optional default for hot, or leave empty
-        }
-    }
-
-    void SetWater()
-    {
-        if (cupHeld == "Glass" && cupFilled == "")
-        {
-            EnableSprite("Iced Tea");
-            cupFilled = "Water";
-            currentTeaColor = "Green"; // optional default for iced, or leave empty
         }
     }
 
     public void ClearEverything()
     {
         foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
-        {
             sr.enabled = false;
-        }
+        teaType = null;
+        hasMilk = hasHoney = hasIce = false;
         cupFilled = "";
-        cupHeld = "";
-        hasMilk = false;
-        hasHoney = false;
-        hasIce = false;
-        currentTeaColor = "";
     }
 
-    // ----------------------
-    // Expose order information so we can compare to customer's order
-    // ----------------------
+    // -----------------------
+    // Simple setters
+    // -----------------------
+    public void SetCup(CupType type)
+    {
+        cupHeld = type;
+        EnableSprite(type == CupType.Glass ? "Glass Cup" : "Tea Cup");
+    }
+
+    public void SetTea(TeaType tea)
+    {
+        teaType = tea;
+        EnableSprite($"{tea} {(cupHeld == CupType.Glass ? "Glass" : "Tea")}");
+    }
+
+    public void AddMilk()
+    {
+        if (teaType != null) { hasMilk = true; EnableSprite("Milk " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); }
+    }
+
+    public void AddHoney()
+    {
+        if (teaType != null) { hasHoney = true; EnableSprite("Honey " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); }
+    }
+
+    public void AddIce()
+    {
+        if (cupHeld == CupType.Glass) { hasIce = true; EnableSprite("Ice"); }
+    }
+
+    // -----------------------
+    // Comparison interface
+    // -----------------------
     public OrderData GetOrderData()
     {
         OrderData od = new OrderData
         {
             cupType = cupHeld,
-            teaColor = currentTeaColor,
+            teaType = teaType ?? TeaType.Red,
             milk = hasMilk,
             honey = hasHoney,
             ice = hasIce
@@ -179,15 +87,99 @@ public class HeldTea : MonoBehaviour
         return od;
     }
 
-    // Optional: helper to set precise order data (useful in testing / UI)
     public void ApplyOrderData(OrderData od)
     {
         ClearEverything();
+        SetCup(od.cupType);
+        SetTea(od.teaType);
+        if (od.milk) AddMilk();
+        if (od.honey) AddHoney();
+        if (od.ice) AddIce();
+        cupFilled = od.ice ? "Water" : (od.teaType.ToString() + " tea"); // mild compatibility
+    }
 
-        if (!string.IsNullOrEmpty(od.cupType)) SetCup(od.cupType);
-        if (!string.IsNullOrEmpty(od.teaColor)) SetTea(od.teaColor);
-        if (od.ice) SetIce();
-        if (od.honey) SetHoney();
-        if (od.milk) SetMilk();
+    // ------- Compatibility shim (string SetHeld) -------
+    public void SetHeld(string item)
+    {
+        if (string.IsNullOrEmpty(item)) return;
+
+        // Cup names
+        if (item.Equals("Glass", StringComparison.OrdinalIgnoreCase))
+        {
+            SetCup(CupType.Glass);
+            cupFilled = "";
+            return;
+        }
+        if (item.Equals("Tea", StringComparison.OrdinalIgnoreCase))
+        {
+            SetCup(CupType.Tea);
+            cupFilled = "";
+            return;
+        }
+
+        // extras + special strings
+        if (item.Equals("Ice", StringComparison.OrdinalIgnoreCase))
+        {
+            AddIce();
+            if (cupHeld == CupType.Glass) cupFilled = "Water";
+            return;
+        }
+        if (item.Equals("Honey", StringComparison.OrdinalIgnoreCase))
+        {
+            AddHoney();
+            return;
+        }
+        if (item.Equals("Milk", StringComparison.OrdinalIgnoreCase))
+        {
+            AddMilk();
+            return;
+        }
+        if (item.Equals("Hot", StringComparison.OrdinalIgnoreCase))
+        {
+            // emulate hot: mug + default hot tea
+            SetCup(CupType.Tea);
+            SetTea(TeaType.Black);
+            cupFilled = "Hot";
+            return;
+        }
+        if (item.Equals("Water", StringComparison.OrdinalIgnoreCase))
+        {
+            // emulate iced glass
+            SetCup(CupType.Glass);
+            SetTea(TeaType.Green);
+            AddIce();
+            cupFilled = "Water";
+            return;
+        }
+
+        // Try parse as tea color: "red", "red tea", etc.
+        if (TryParseTeaType(item, out TeaType tea))
+        {
+            SetTea(tea);
+            cupFilled = "Tea";
+            return;
+        }
+
+        Debug.LogWarning($"HeldTea.SetHeld: unknown item '{item}' (compat shim)", this);
+    }
+
+    // helper used by shim
+    bool TryParseTeaType(string s, out TeaType result)
+    {
+        result = TeaType.Red;
+        if (string.IsNullOrEmpty(s)) return false;
+
+        string clean = s.Trim().ToLowerInvariant();
+        if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
+
+        string candidate = CapitalizeFirst(clean);
+        return Enum.TryParse<TeaType>(candidate, true, out result);
+    }
+
+    string CapitalizeFirst(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+        if (s.Length == 1) return s.ToUpperInvariant();
+        return char.ToUpperInvariant(s[0]) + s.Substring(1);
     }
 }

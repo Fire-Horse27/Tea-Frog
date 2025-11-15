@@ -588,4 +588,30 @@ public class FrogAI : MonoBehaviour
     }
 
     #endregion
+
+    // Force the frog to be marked served and start leaving immediately.
+    // This covers the case where Serve() might require an assignedSeat; this will work either way.
+    public void ForceServeAndLeave()
+    {
+        // mark served and play happy animation
+        served = true;
+        UpdateAnimatorHappy();
+
+        // If the frog has a reserved seat, notify CafeManager that the seat is free now
+        // (this avoids seat getting stuck). Then clear the assignedSeat reference.
+        if (assignedSeat != null)
+        {
+            if (CafeManager.Instance != null)
+                CafeManager.Instance.NotifySeatFreed(assignedSeat);
+            assignedSeat = null;
+        }
+
+        // stop any existing coroutines for movement/waiting to avoid conflicting state
+        StopAllCoroutines();
+
+        // Start the leaving sequence (uses same LeaveRoutine already in FrogAI)
+        StartCoroutine(LeaveRoutine());
+    }
+
+
 }

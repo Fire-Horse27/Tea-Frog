@@ -1,17 +1,17 @@
 using System;
+
 [Serializable]
 public struct OrderData
 {
-    public string cupType;   // "Glass" or "Tea" (mug)
-    public string teaColor;  // e.g. "Green", "Black", "Rooibos"
+    public CupType cupType;    // Tea mug or Glass
+    public TeaType teaType;    // Red, Green, Black, or Blue
     public bool milk;
     public bool honey;
     public bool ice;
 
     public override string ToString()
     {
-        // Build readable order string
-        string s = $"{teaColor} tea in a {cupType}";
+        string s = $"{teaType} tea in a {(cupType == CupType.Tea ? "mug" : "glass")}";
         string extras = "";
         if (milk) extras += (extras.Length > 0 ? ", " : "") + "milk";
         if (honey) extras += (extras.Length > 0 ? ", " : "") + "honey";
@@ -22,12 +22,13 @@ public struct OrderData
 
     public bool Matches(OrderData other)
     {
-        // Exact match of all fields
         return cupType == other.cupType &&
-               teaColor == other.teaColor &&
+               teaType == other.teaType &&
                milk == other.milk &&
                honey == other.honey &&
                ice == other.ice;
     }
 }
 
+public enum CupType { Tea, Glass }
+public enum TeaType { Red, Green, Black, Blue }

@@ -5,11 +5,10 @@ public class CustomerOrder : MonoBehaviour
 {
     public OrderData order;
 
-    [Header("Randomization options")]
-    public string[] teaColors = new string[] { "red tea", "blue tea", "green tea", "black tea" };
+    [Header("Randomization")]
     public float chanceMilk = 0.35f;
     public float chanceHoney = 0.25f;
-    public float chanceIce = 0.2f; // iced orders less common
+    public float chanceIce = 0.2f;
 
     void Start()
     {
@@ -20,29 +19,23 @@ public class CustomerOrder : MonoBehaviour
     {
         order = new OrderData();
 
-        // Cup type: randomly choose mug or glass (mug = "Tea")
-        //order.cupType = (Random.value < 0.5f) ? "Tea" : "Glass";
-        order.cupType = "Tea";
+        // Randomly pick a cup
+        order.cupType = (Random.value < 0.5f) ? CupType.Tea : CupType.Glass;
 
-        // Tea color
-        order.teaColor = teaColors[Random.Range(0, teaColors.Length)];
+        // Pick one of the four tea colors
+        order.teaType = (TeaType)Random.Range(0, 4); // 0=Red, 1=Green, 2=Black, 3=Blue
 
         // Extras
         order.milk = (Random.value < chanceMilk);
         order.honey = (Random.value < chanceHoney);
+        order.ice = (Random.value < chanceIce);
 
-        // Ice is only sensible if cup is Glass, and conflicts with milk (optional)
-        if (order.cupType == "Glass" && Random.value < chanceIce)
-            order.ice = true;
-        else
-            order.ice = false;
-
-        // If iced and milk is true, you may decide to disallow: let's prevent milk+ice by default
-        if (order.ice && order.milk) order.milk = false;
+        // Logical cleanup
+        if (order.ice && order.cupType == CupType.Tea)
+            order.ice = false; // no ice in mugs
+        if (order.ice && order.milk)
+            order.milk = false; // iced + milk conflict
     }
 
-    public string GetOrderString()
-    {
-        return order.ToString();
-    }
+    public string GetOrderString() => order.ToString();
 }
