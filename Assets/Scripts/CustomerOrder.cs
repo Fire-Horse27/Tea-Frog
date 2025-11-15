@@ -21,7 +21,8 @@ public class CustomerOrder : MonoBehaviour
         order = new OrderData();
 
         // Cup type: randomly choose mug or glass (mug = "Tea")
-        order.cupType = (Random.value < 0.5f) ? "Tea" : "Glass";
+        //order.cupType = (Random.value < 0.5f) ? "Tea" : "Glass";
+        order.cupType = "Tea";
 
         // Tea color
         order.teaColor = teaColors[Random.Range(0, teaColors.Length)];
