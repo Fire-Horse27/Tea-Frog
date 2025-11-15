@@ -11,8 +11,7 @@ public class Cashregister : MonoBehaviour
     public static Transform Button;
     public static Transform playerTransform;
 
-    Collider2D col;
-    HeldTea heldTea;
+    public Collider2D col;
     public bool showingPrompt;
 
     // How close to the counter we consider "at the counter" when asking frogs
@@ -27,14 +26,11 @@ public class Cashregister : MonoBehaviour
             var p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) playerTransform = p.transform;
         }
-
-        if (playerTransform != null)
-            heldTea = playerTransform.GetComponentInChildren<HeldTea>();
     }
 
     void Update()
     {
-        if (playerTransform == null || Button == null) return;
+        //if (playerTransform == null || Button == null) return;
 
         bool playerInside = col.OverlapPoint(playerTransform.position);
 
@@ -48,8 +44,11 @@ public class Cashregister : MonoBehaviour
         if (frontFrog != null)
         {
             // Use frog's IsAtCounter to decide if it's physically at the counter
-            frontEligible = frontFrog.IsAtCounter(registerCounterTolerance) && !frontFrog.orderTaken;
+            //frontEligible = frontFrog.IsAtCounter(registerCounterTolerance) && !frontFrog.orderTaken;
+            frontEligible = true;
         }
+
+        //Debug.Log(frontEligible);
 
         // Show prompt when player inside and (a) frontEligible OR (b) fallback legacy behavior (item interactions)
         if (playerInside && frontEligible)
