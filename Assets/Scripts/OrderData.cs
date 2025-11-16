@@ -31,4 +31,4 @@ public struct OrderData
 }
 
 public enum CupType { Tea, Glass }
-public enum TeaType { Red, Green, Black, Blue }
+public enum TeaType {Empty, Red, Green, Black, Blue }

@@ -556,6 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: 
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -2520,6 +2521,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Ice
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -2991,6 +2993,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Red
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -4256,6 +4259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Hot
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -6153,6 +6157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Black
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -6651,6 +6656,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: honey
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -7899,6 +7905,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: glass
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -8173,6 +8180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Green
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -8618,6 +8626,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Milk
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -12853,6 +12862,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Blue
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -13112,6 +13122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Tea
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -13432,6 +13443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Trashcan
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -14087,6 +14099,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Water
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0

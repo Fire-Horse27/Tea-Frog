@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KettleFuntion : MonoBehaviour
+public class KettleFunction : MonoBehaviour
 {
     public SpriteRenderer targetRenderer; // assign in Inspector (or GetComponent in Start)
     public Sprite[] sprites;              // assign PNGs (sprites) in Inspector

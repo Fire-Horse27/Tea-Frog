@@ -16,6 +16,7 @@ public class GrabItem : MonoBehaviour
 
     Collider2D col;
     HeldTea heldTea;
+    public KettleFunction kettle;
     public bool showingPrompt;
 
     // sensible defaults when emulating Hot/Water behavior
@@ -96,7 +97,9 @@ public class GrabItem : MonoBehaviour
 
         if (id == "tea")
         {
+            KettleFunction kettle = GetComponent<KettleFunction>();
             heldTea.SetCup(CupType.Tea);
+            kettle.NextSprite();
             return;
         }
 

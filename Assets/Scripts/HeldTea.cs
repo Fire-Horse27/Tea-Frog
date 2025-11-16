@@ -4,7 +4,7 @@ using UnityEngine;
 public class HeldTea : MonoBehaviour
 {
     public CupType cupHeld = CupType.Tea;
-    public TeaType? teaType = null; // null = empty cup
+    public TeaType teaType = TeaType.Empty;
     private bool hasMilk;
     private bool hasHoney;
     private bool hasIce;
@@ -36,7 +36,7 @@ public class HeldTea : MonoBehaviour
     {
         foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
             sr.enabled = false;
-        teaType = null;
+        teaType = TeaType.Empty;
         hasMilk = hasHoney = hasIce = false;
         cupFilled = "";
     }
@@ -79,7 +79,7 @@ public class HeldTea : MonoBehaviour
         OrderData od = new OrderData
         {
             cupType = cupHeld,
-            teaType = teaType ?? TeaType.Red,
+            teaType = teaType,
             milk = hasMilk,
             honey = hasHoney,
             ice = hasIce
@@ -138,7 +138,7 @@ public class HeldTea : MonoBehaviour
         {
             // emulate hot: mug + default hot tea
             SetCup(CupType.Tea);
-            SetTea(TeaType.Black);
+            SetTea(TeaType.Empty);
             cupFilled = "Hot";
             return;
         }
@@ -146,7 +146,7 @@ public class HeldTea : MonoBehaviour
         {
             // emulate iced glass
             SetCup(CupType.Glass);
-            SetTea(TeaType.Green);
+            SetTea(TeaType.Empty);
             AddIce();
             cupFilled = "Water";
             return;
@@ -160,7 +160,7 @@ public class HeldTea : MonoBehaviour
             return;
         }
 
-        Debug.LogWarning($"HeldTea.SetHeld: unknown item '{item}' (compat shim)", this);
+        //Debug.LogWarning($"HeldTea.SetHeld: unknown item '{item}' (compat shim)", this);
     }
 
     // helper used by shim

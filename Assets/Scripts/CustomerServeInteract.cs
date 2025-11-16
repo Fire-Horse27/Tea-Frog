@@ -30,8 +30,8 @@ public class CustomerServeInteract : MonoBehaviour
 
         // ensure collider is trigger
         var col = GetComponent<Collider2D>();
-        if (col != null && !col.isTrigger)
-            Debug.LogWarning($"[CustomerServeInteract] Collider on {name} should be set to 'Is Trigger' for this interaction to work.", this);
+        //if (col != null && !col.isTrigger)
+            //Debug.LogWarning($"[CustomerServeInteract] Collider on {name} should be set to 'Is Trigger' for this interaction to work.", this);
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -91,7 +91,7 @@ public class CustomerServeInteract : MonoBehaviour
         // If the player isn't holding a drink -> try to take order (if frog at counter)
         if (playerHeldTea == null)
         {
-            Debug.Log("[CustomerServeInteract] Player has no HeldTea component.");
+            //Debug.Log("[CustomerServeInteract] Player has no HeldTea component.");
             return;
         }
 
@@ -110,14 +110,14 @@ public class CustomerServeInteract : MonoBehaviour
         var co = customerOrder;
         if (co == null)
         {
-            Debug.LogWarning("[CustomerServeInteract] Missing CustomerOrder on frog.");
+            //Debug.LogWarning("[CustomerServeInteract] Missing CustomerOrder on frog.");
             return;
         }
 
         OrderData playerOrder = playerHeldTea.GetOrderData();
         OrderData needed = co.order;
 
-        Debug.Log($"[CustomerServeInteract] Player offers '{playerOrder}' for frog needing '{needed}'.");
+        //Debug.Log($"[CustomerServeInteract] Player offers '{playerOrder}' for frog needing '{needed}'.");
 
         if (needed.Matches(playerOrder))
         {
@@ -132,7 +132,7 @@ public class CustomerServeInteract : MonoBehaviour
         else
         {
             // wrong order: you can show feedback here
-            Debug.Log("[CustomerServeInteract] Wrong order delivered.");
+            //Debug.Log("[CustomerServeInteract] Wrong order delivered.");
             // optional: play sound / UI feedback
         }
     }

@@ -32,7 +32,7 @@ public class PlayerServe : MonoBehaviour
     {
         if (heldTea == null)
         {
-            Debug.LogWarning("[PlayerServe] HeldTea component not found on player.");
+            //Debug.LogWarning("[PlayerServe] HeldTea component not found on player.");
             return;
         }
 
@@ -96,7 +96,7 @@ public class PlayerServe : MonoBehaviour
 
         if (best == null) return;
 
-        Debug.Log($"[PlayerServe] Selected frog: {best.name} (dist {Vector3.Distance(transform.position, best.transform.position):F2}). HoldingDrink={holdingDrink}");
+        //Debug.Log($"[PlayerServe] Selected frog: {best.name} (dist {Vector3.Distance(transform.position, best.transform.position):F2}). HoldingDrink={holdingDrink}");
 
         // If player isn't holding a drink: attempt to take order (calls FrogAI.OrderTakenByPlayer())
         if (!holdingDrink)
@@ -110,14 +110,14 @@ public class PlayerServe : MonoBehaviour
         var co = best.GetComponent<CustomerOrder>();
         if (co == null)
         {
-            Debug.LogWarning("[PlayerServe] Target frog has no CustomerOrder component.");
+            //Debug.LogWarning("[PlayerServe] Target frog has no CustomerOrder component.");
             return;
         }
 
         OrderData playerOrder = heldTea.GetOrderData();
         OrderData needed = co.order;
 
-        Debug.Log($"[PlayerServe] Comparing: Frog needs '{needed}', Player offers '{playerOrder}'.");
+        //Debug.Log($"[PlayerServe] Comparing: Frog needs '{needed}', Player offers '{playerOrder}'.");
 
         bool match = needed.Matches(playerOrder);
 
@@ -135,11 +135,11 @@ public class PlayerServe : MonoBehaviour
             }
 
             heldTea.ClearEverything();
-            Debug.Log($"[PlayerServe] Served {best.name} successfully.");
+            //Debug.Log($"[PlayerServe] Served {best.name} successfully.");
         }
         else
         {
-            Debug.Log($"[PlayerServe] Wrong order for {best.name}.");
+            //Debug.Log($"[PlayerServe] Wrong order for {best.name}.");
             // TODO: show UI feedback / play sound, etc.
         }
     }

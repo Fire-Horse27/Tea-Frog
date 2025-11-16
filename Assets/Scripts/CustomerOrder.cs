@@ -23,7 +23,11 @@ public class CustomerOrder : MonoBehaviour
         order.cupType = (Random.value < 0.5f) ? CupType.Tea : CupType.Glass;
 
         // Pick one of the four tea colors
-        order.teaType = (TeaType)Random.Range(0, 4); // 0=Red, 1=Green, 2=Black, 3=Blue
+        // Pick one of the four teas, skipping Empty
+        TeaType[] possibleTeas = { TeaType.Red, TeaType.Green, TeaType.Black, TeaType.Blue };
+        order.teaType = possibleTeas[Random.Range(0, possibleTeas.Length)];
+
+        //order.teaType = (TeaType)Random.Range(0, 4); // 0=Red, 1=Green, 2=Black, 3=Blue
 
         // Extras
         order.milk = (Random.value < chanceMilk);
