@@ -530,7 +530,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.36}
+  m_Offset: {x: -0.049378693, y: -0.36}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -540,7 +540,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.03, y: 1.41}
+  m_Size: {x: 0.9312426, y: 1.4100001}
   m_EdgeRadius: 0
 --- !u!114 &138852074
 MonoBehaviour:
@@ -556,6 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: 
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -2520,6 +2521,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Ice
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -2679,7 +2681,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.3580246
+  orthographic size: 3.925926
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2991,6 +2993,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Red
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -4212,7 +4215,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.25, y: 0}
+  m_Offset: {x: -0.1915009, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -4222,7 +4225,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.8830018, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &826825944
 MonoBehaviour:
@@ -4256,6 +4259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Hot
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -6153,6 +6157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Black
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -6649,8 +6654,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ebc14a5eeb80f04483a951cffc12b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
-  itemID: honey
+  itemID: Honey
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -6688,7 +6694,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.17}
+  m_Offset: {x: -0.075561285, y: 0.16999999}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -6698,7 +6704,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.92, y: 0.95}
+  m_Size: {x: 0.7688775, y: 0.95}
   m_EdgeRadius: 0
 --- !u!212 &1095497736
 SpriteRenderer:
@@ -7897,8 +7903,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ebc14a5eeb80f04483a951cffc12b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
-  itemID: glass
+  itemID: Glass
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -7994,7 +8001,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.21}
+  m_Offset: {x: -0.021937132, y: 0.20999998}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -8004,7 +8011,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.01, y: 1}
+  m_Size: {x: 0.8783765, y: 1}
   m_EdgeRadius: 0
 --- !u!4 &1185035128
 Transform:
@@ -8173,6 +8180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Green
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -8618,6 +8626,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Milk
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -12853,6 +12862,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Blue
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -13112,6 +13122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTea
   itemID: Tea
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0
@@ -13149,7 +13160,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.05, y: 0.1}
+  m_Offset: {x: -0.042687535, y: 0.100000024}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -13159,7 +13170,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.89762664, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &1770551562
 SpriteRenderer:
@@ -13432,6 +13443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Trashcan
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 2
   defaultIcedTea: 1
@@ -14087,6 +14099,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabItem
   itemID: Water
   promptOffsetY: 0.5
+  kettle: {fileID: 0}
   showingPrompt: 0
   defaultHotTea: 0
   defaultIcedTea: 0

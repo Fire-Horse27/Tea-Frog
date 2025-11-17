@@ -58,17 +58,26 @@ public class HeldTea : MonoBehaviour
 
     public void AddMilk()
     {
-        if (teaType != null) { hasMilk = true; EnableSprite("Milk " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); }
+        if (teaType != TeaType.Empty) { 
+            hasMilk = true; 
+            EnableSprite("Milk " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); 
+        }
     }
 
     public void AddHoney()
     {
-        if (teaType != null) { hasHoney = true; EnableSprite("Honey " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); }
+        if (teaType != TeaType.Empty) { 
+            hasHoney = true; 
+            EnableSprite("Honey " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); 
+        }
     }
 
     public void AddIce()
     {
-        if (cupHeld == CupType.Glass) { hasIce = true; EnableSprite("Ice"); }
+        if (cupHeld == CupType.Glass) { 
+            hasIce = true; 
+            EnableSprite("Ice"); 
+        }
     }
 
     // -----------------------
