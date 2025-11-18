@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 public class HeldTea : MonoBehaviour
 {
@@ -9,8 +10,66 @@ public class HeldTea : MonoBehaviour
     private bool hasHoney;
     private bool hasIce;
 
-    // compatibility: some scripts still read/write cupFilled
-    public string cupFilled = "";
+    // -----------------------
+    // Simple setters
+    // -----------------------
+    public void SetCup(CupType cup)
+    {
+        if (cupHeld == CupType.None)
+        {
+            cupHeld = cup;
+            EnableSprite(cup.ToString() + " Cup");
+        }
+    }
+
+    public void AddMilk()
+    {
+        if (teaType != TeaType.Empty && teaType != TeaType.Water)
+        {
+            hasMilk = true;
+            EnableSprite("Milk " + cupHeld.ToString());
+        }
+    }
+
+    public void AddHoney()
+    {
+        if (teaType != TeaType.Empty && teaType != TeaType.Water)
+        {
+            hasHoney = true;
+            EnableSprite("Honey " + cupHeld.ToString());
+        }
+    }
+
+    public void AddIce()
+    {
+        if (cupHeld == CupType.Glass)
+        {
+            hasIce = true;
+            EnableSprite("Ice");
+        }
+    }
+
+    public void SetWater(string temp)
+    {
+        if (
+            (cupHeld == CupType.Tea && teaType == TeaType.Empty && temp == "Hot") || 
+            (cupHeld == CupType.Glass && teaType == TeaType.Empty && temp == "Water")
+           )
+        {
+            teaType = TeaType.Water;
+            EnableSprite("Water " + cupHeld.ToString());
+        }
+    }
+
+    public void SetTea(TeaType tea)
+    {
+        if (teaType == TeaType.Water)
+        {
+            DisableSprite("Water " + cupHeld.ToString());
+            teaType = tea;
+            EnableSprite(tea.ToString() + " " + cupHeld.ToString());
+        }
+    }
 
     void EnableSprite(string name)
     {
@@ -18,7 +77,11 @@ public class HeldTea : MonoBehaviour
         if (t)
         {
             var sr = t.GetComponent<SpriteRenderer>();
-            if (sr != null) sr.enabled = true;
+            if (sr) sr.enabled = true;
+        }
+        else
+        {
+            Debug.LogWarning($"Child '{name}' not found!");
         }
     }
 
@@ -30,6 +93,10 @@ public class HeldTea : MonoBehaviour
             var sr = t.GetComponent<SpriteRenderer>();
             if (sr != null) sr.enabled = false;
         }
+        else
+        {
+            Debug.LogWarning($"Child '{name}' not found!");
+        }
     }
 
     public void ClearEverything()
@@ -37,47 +104,8 @@ public class HeldTea : MonoBehaviour
         foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
             sr.enabled = false;
         teaType = TeaType.Empty;
+        cupHeld = CupType.None;
         hasMilk = hasHoney = hasIce = false;
-        cupFilled = "";
-    }
-
-    // -----------------------
-    // Simple setters
-    // -----------------------
-    public void SetCup(CupType type)
-    {
-        cupHeld = type;
-        EnableSprite(type == CupType.Glass ? "Glass Cup" : "Tea Cup");
-    }
-
-    public void SetTea(TeaType tea)
-    {
-        teaType = tea;
-        EnableSprite($"{tea} {(cupHeld == CupType.Glass ? "Glass" : "Tea")}");
-    }
-
-    public void AddMilk()
-    {
-        if (teaType != TeaType.Empty) { 
-            hasMilk = true; 
-            EnableSprite("Milk " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); 
-        }
-    }
-
-    public void AddHoney()
-    {
-        if (teaType != TeaType.Empty) { 
-            hasHoney = true; 
-            EnableSprite("Honey " + (cupHeld == CupType.Glass ? "Glass" : "Tea")); 
-        }
-    }
-
-    public void AddIce()
-    {
-        if (cupHeld == CupType.Glass) { 
-            hasIce = true; 
-            EnableSprite("Ice"); 
-        }
     }
 
     // -----------------------
@@ -104,91 +132,76 @@ public class HeldTea : MonoBehaviour
         if (od.milk) AddMilk();
         if (od.honey) AddHoney();
         if (od.ice) AddIce();
-        cupFilled = od.ice ? "Water" : (od.teaType.ToString() + " tea"); // mild compatibility
     }
 
-    // ------- Compatibility shim (string SetHeld) -------
     public void SetHeld(string item)
     {
-        if (string.IsNullOrEmpty(item)) return;
+        switch (item)
+        {
+            case "Glass":
+                SetCup(CupType.Glass);
+                break;
 
-        // Cup names
-        if (item.Equals("Glass", StringComparison.OrdinalIgnoreCase))
-        {
-            SetCup(CupType.Glass);
-            cupFilled = "";
-            return;
-        }
-        if (item.Equals("Tea", StringComparison.OrdinalIgnoreCase))
-        {
-            SetCup(CupType.Tea);
-            cupFilled = "";
-            return;
-        }
+            case "Tea":
+                SetCup(CupType.Tea);
+                break;
 
-        // extras + special strings
-        if (item.Equals("Ice", StringComparison.OrdinalIgnoreCase))
-        {
-            AddIce();
-            if (cupHeld == CupType.Glass) cupFilled = "Water";
-            return;
-        }
-        if (item.Equals("Honey", StringComparison.OrdinalIgnoreCase))
-        {
-            AddHoney();
-            return;
-        }
-        if (item.Equals("Milk", StringComparison.OrdinalIgnoreCase))
-        {
-            AddMilk();
-            return;
-        }
-        if (item.Equals("Hot", StringComparison.OrdinalIgnoreCase))
-        {
-            // emulate hot: mug + default hot tea
-            SetCup(CupType.Tea);
-            SetTea(TeaType.Empty);
-            cupFilled = "Hot";
-            return;
-        }
-        if (item.Equals("Water", StringComparison.OrdinalIgnoreCase))
-        {
-            // emulate iced glass
-            SetCup(CupType.Glass);
-            SetTea(TeaType.Empty);
-            AddIce();
-            cupFilled = "Water";
-            return;
-        }
+            case "Ice":
+                AddIce();
+                break;
 
-        // Try parse as tea color: "red", "red tea", etc.
-        if (TryParseTeaType(item, out TeaType tea))
-        {
-            SetTea(tea);
-            cupFilled = "Tea";
-            return;
-        }
+            case "Honey":
+                AddHoney();
+                break;
 
-        //Debug.LogWarning($"HeldTea.SetHeld: unknown item '{item}' (compat shim)", this);
+            case "Milk":
+                AddMilk();
+                break;
+
+            case "Water":
+            case "Hot":
+                SetWater(item);
+                break;
+
+            case "Black":
+                SetTea(TeaType.Black);
+                break;
+
+            case "Blue":
+                SetTea(TeaType.Blue);
+                break;
+
+            case "Green":
+                SetTea(TeaType.Green);
+                break;
+
+            case "Red":
+                SetTea(TeaType.Red);
+                break;
+
+            default:
+                Debug.Log(item + " not found");
+                break;
+        }
     }
 
     // helper used by shim
-    bool TryParseTeaType(string s, out TeaType result)
-    {
-        result = TeaType.Red;
-        if (string.IsNullOrEmpty(s)) return false;
+    //bool TryParseTeaType(string s, out TeaType result)
+    //{
+    //    result = TeaType.Red;
+    //    if (string.IsNullOrEmpty(s)) return false;
 
-        string clean = s.Trim().ToLowerInvariant();
-        if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
+    //    string clean = s.Trim().ToLowerInvariant();
+    //    if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
 
-        string candidate = CapitalizeFirst(clean);
-        return Enum.TryParse<TeaType>(candidate, true, out result);
-    }
+    //    string candidate = CapitalizeFirst(clean);
+    //    return Enum.TryParse<TeaType>(candidate, true, out result);
+    //}
 
-    string CapitalizeFirst(string s)
-    {
-        if (string.IsNullOrEmpty(s)) return s;
-        if (s.Length == 1) return s.ToUpperInvariant();
-        return char.ToUpperInvariant(s[0]) + s.Substring(1);
-    }
+    //string CapitalizeFirst(string s)
+    //{
+    //    if (string.IsNullOrEmpty(s)) return s;
+    //    if (s.Length == 1) return s.ToUpperInvariant();
+    //    return char.ToUpperInvariant(s[0]) + s.Substring(1);
+    //}
 }

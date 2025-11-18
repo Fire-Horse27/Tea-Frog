@@ -1,34 +1,51 @@
-using System;
+// OrderData.cs
+using UnityEngine;
 
-[Serializable]
-public struct OrderData
+public enum CupType
 {
-    public CupType cupType;    // Tea mug or Glass
-    public TeaType teaType;    // Red, Green, Black, or Blue
+    None,
+    Tea,
+    Glass
+}
+
+public enum TeaType
+{
+    Empty,
+    Water,
+    Red,
+    Green,
+    Black,
+    Blue
+}
+
+[System.Serializable]
+public class OrderData
+{
+    public CupType cupType = CupType.None;
+    public TeaType teaType = TeaType.Empty;
     public bool milk;
     public bool honey;
     public bool ice;
 
     public override string ToString()
     {
-        string s = $"{teaType} tea in a {(cupType == CupType.Tea ? "mug" : "glass")}";
-        string extras = "";
-        if (milk) extras += (extras.Length > 0 ? ", " : "") + "milk";
-        if (honey) extras += (extras.Length > 0 ? ", " : "") + "honey";
-        if (ice) extras += (extras.Length > 0 ? ", " : "") + "ice";
-        if (extras.Length > 0) s += $" with {extras}";
-        return s;
+        string parts = cupType.ToString();
+        if (teaType != TeaType.Empty)
+            parts += " " + teaType.ToString();
+        if (milk) parts += " + Milk";
+        if (honey) parts += " + Honey";
+        if (ice) parts += " + Ice";
+        return parts;
     }
 
+    // exact field-by-field match
     public bool Matches(OrderData other)
     {
-        return cupType == other.cupType &&
-               teaType == other.teaType &&
-               milk == other.milk &&
-               honey == other.honey &&
-               ice == other.ice;
+        if (other == null) return false;
+        return cupType == other.cupType
+            && teaType == other.teaType
+            && milk == other.milk
+            && honey == other.honey
+            && ice == other.ice;
     }
 }
-
-public enum CupType { Tea, Glass }
-public enum TeaType {Empty, Red, Green, Black, Blue }

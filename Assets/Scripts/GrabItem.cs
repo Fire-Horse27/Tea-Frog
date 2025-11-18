@@ -39,18 +39,7 @@ public class GrabItem : MonoBehaviour
 
     void Update()
     {
-        if (playerTransform == null || Button == null)
-            return;
-
-        bool playerInside = false;
-        try
-        {
-            playerInside = col.OverlapPoint(playerTransform.position);
-        }
-        catch (Exception)
-        {
-            playerInside = false;
-        }
+        bool playerInside = col.OverlapPoint(playerTransform.position);
 
         if (playerInside)
         {
@@ -65,7 +54,7 @@ public class GrabItem : MonoBehaviour
         }
         else if (!playerInside && showingPrompt)
         {
-            if (Button != null) Button.gameObject.SetActive(false);
+            Button.gameObject.SetActive(false);
             showingPrompt = false;
         }
 
@@ -77,99 +66,40 @@ public class GrabItem : MonoBehaviour
 
     void HandleUse()
     {
-        if (heldTea == null) return;
+        if (itemID == "Hot" && heldTea.cupHeld == CupType.Tea && heldTea.teaType == TeaType.Empty)
+        {
+            var kettle = GetComponent<KettleFunction>();
+            if (kettle != null) kettle.NextSprite();
+        }
 
-        // Trashcan behaviour
-        if (itemID.Equals("Trashcan", StringComparison.OrdinalIgnoreCase))
+        if (itemID == "Trashcan")
         {
             heldTea.ClearEverything();
-            return;
         }
-
-        string id = itemID.Trim().ToLowerInvariant();
-
-        // Known keywords
-        if (id == "glass")
+        else
         {
-            heldTea.SetCup(CupType.Glass);
-            return;
+            heldTea.SetHeld(itemID);
         }
-
-        if (id == "tea")
-        {
-            KettleFunction kettle = GetComponent<KettleFunction>();
-            heldTea.SetCup(CupType.Tea);
-            kettle.NextSprite();
-            return;
-        }
-
-        if (id == "ice")
-        {
-            heldTea.AddIce();
-            return;
-        }
-
-        if (id == "honey")
-        {
-            heldTea.AddHoney();
-            return;
-        }
-
-        if (id == "milk")
-        {
-            heldTea.AddMilk();
-            return;
-        }
-
-        if (id == "hot")
-        {
-            // emulate "hot" by ensuring mug and setting a default tea
-            heldTea.SetCup(CupType.Tea);
-            heldTea.SetTea(defaultHotTea);
-            return;
-        }
-
-        if (id == "water")
-        {
-            // emulate "water" as iced tea in a glass with a default flavor
-            heldTea.SetCup(CupType.Glass);
-            heldTea.SetTea(defaultIcedTea);
-            heldTea.AddIce();
-            return;
-        }
-
-        // If id isn't a keyword, try to parse it as a tea color name:
-        // Accepts "red", "red tea", "Red Tea", etc.
-        if (TryParseTeaType(itemID, out TeaType tea))
-        {
-            // Ensure there's a cup (if none, default to mug)
-            // We assume HeldTea.SetTea will work even if cup wasn't set, but we'll set a default cup if needed.
-            heldTea.SetTea(tea);
-            return;
-        }
-
-        // If all else fails, as a fallback call ClearEverything or do nothing
-        Debug.LogWarning($"GrabItem: unknown itemID '{itemID}' - no action taken.");
     }
 
-    bool TryParseTeaType(string s, out TeaType result)
-    {
-        result = TeaType.Red;
-        if (string.IsNullOrEmpty(s)) return false;
+    //bool TryParseTeaType(string s, out TeaType result)
+    //{
+    //    result = TeaType.Red;
+    //    if (string.IsNullOrEmpty(s)) return false;
 
-        string clean = s.Trim().ToLowerInvariant();
-        if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
+    //    string clean = s.Trim().ToLowerInvariant();
+    //    if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
 
-        // capitalize first letter to match enum names (Red, Green, Black, Blue)
-        string candidate = CapitalizeFirst(clean);
+    //    // capitalize first letter to match enum names (Red, Green, Black, Blue)
+    //    string candidate = CapitalizeFirst(clean);
 
-        return Enum.TryParse<TeaType>(candidate, true, out result);
-    }
+    //    return Enum.TryParse<TeaType>(candidate, true, out result);
+    //}
 
-    string CapitalizeFirst(string s)
-    {
-        if (string.IsNullOrEmpty(s)) return s;
-        if (s.Length == 1) return s.ToUpperInvariant();
-        return char.ToUpperInvariant(s[0]) + s.Substring(1);
-    }
+    //string CapitalizeFirst(string s)
+    //{
+    //    if (string.IsNullOrEmpty(s)) return s;
+    //    if (s.Length == 1) return s.ToUpperInvariant();
+    //    return char.ToUpperInvariant(s[0]) + s.Substring(1);
+    //}
 }
