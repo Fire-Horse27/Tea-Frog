@@ -22,6 +22,7 @@ public class Spawner : MonoBehaviour
     // runtime
     private List<FrogAI> pool = new List<FrogAI>();
     private float spawnTimer;
+    //private DoorAnimation door;
 
     void Start()
     {
@@ -60,6 +61,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
+
     void AttemptSpawn()
     {
         // count active
@@ -73,6 +75,7 @@ public class Spawner : MonoBehaviour
             Debug.LogWarning("Spawner: no available frog in pool (consider increasing poolSize).", this);
             return;
         }
+
 
         // position & activate
         frog.transform.position = spawnPoint.position;
