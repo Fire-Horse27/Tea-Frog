@@ -11,9 +11,11 @@ public class GameTimer : MonoBehaviour
 
     private float currentTime;
     private bool isRunning = true;
+    [SerializeField] public GameObject titlePanel;
 
     void Start()
     {
+        titlePanel.SetActive(false);
         currentTime = startTime;
         UpdateTimerDisplay();
     }
@@ -42,13 +44,22 @@ public class GameTimer : MonoBehaviour
         timerText.text = $"{minutes:00}:{seconds:00}";
     }
 
-    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] public GameObject gameOverPanel;
+
 
     void GameOver()
     {
         isRunning = false;
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f; // freezes game physics/updates
+    }
+
+    public void ToTitle()
+    {
+        isRunning = false;
+        gameOverPanel.SetActive(false);
+        titlePanel.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     // Optional: public methods to control timer externally
