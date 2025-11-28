@@ -14,12 +14,15 @@ public class Cashregister : MonoBehaviour
     public Collider2D col;
     public bool showingPrompt;
 
+    private AudioSource audioSource;
+
     // How close to the counter we consider "at the counter" when asking frogs
     public float registerCounterTolerance = 0.08f;
 
     void Awake()
     {
         col = GetComponent<Collider2D>();
+        audioSource = GetComponent<AudioSource>();
 
         if (playerTransform == null)
         {
@@ -69,6 +72,7 @@ public class Cashregister : MonoBehaviour
                 frontFrog.OrderTakenByPlayer();
                 showingPrompt = false;
                 Button.gameObject.SetActive(false);
+                audioSource.PlayOneShot(audioSource.clip);
                 return;
             }
         }

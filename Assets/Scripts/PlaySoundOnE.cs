@@ -4,7 +4,7 @@ public class AreaSoundTrigger : MonoBehaviour
 {
     private AudioSource audioSource;
     private bool isInArea = false;
-    public AudioClip soundToPlay; // Optional: If you want to use PlayOneShot
+    //public AudioClip soundToPlay; // Optional: If you want to use PlayOneShot
 
     void Start()
     {
