@@ -13,11 +13,11 @@ public class GameTimer : MonoBehaviour
     private bool isRunning = true;
     [SerializeField] public GameObject titlePanel;
 
+    private bool firstStart;
+
     void Start()
     {
-        titlePanel.SetActive(false);
-        currentTime = startTime;
-        UpdateTimerDisplay();
+        firstStart = true;
     }
 
     void Update()
@@ -26,7 +26,7 @@ public class GameTimer : MonoBehaviour
 
         currentTime -= Time.deltaTime;
 
-        if (currentTime <= 0)
+        if (currentTime <= 0 && !firstStart)
         {
             currentTime = 0;
             isRunning = false;
@@ -34,6 +34,15 @@ public class GameTimer : MonoBehaviour
         }
 
         UpdateTimerDisplay();
+    }
+
+    public void TimerStart()
+    {
+        titlePanel.SetActive(false);
+        firstStart = false;
+        currentTime = startTime;
+        UpdateTimerDisplay();
+        Debug.Log("Timer start triggered");
     }
 
     void UpdateTimerDisplay()

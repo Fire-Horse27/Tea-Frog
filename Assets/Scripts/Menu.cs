@@ -5,6 +5,11 @@ public class Menu : MonoBehaviour
 {
     public GameTimer timer;
 
+    public void StartGame()
+    {
+        timer.TimerStart();
+    }
+
     public void RestartGame()
     {
         Time.timeScale = 1f; // Unpause time

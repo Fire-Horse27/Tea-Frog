@@ -21,11 +21,14 @@ public class OrderPopupUI : MonoBehaviour
     public Sprite mugSprite;
     public Sprite glassSprite;
     public Sprite[] teaFillSprites;
+    public Sprite[] coldTeaSprites;
     public string[] teaColorNames; // e.g. "red tea", "blue tea", "green tea", "black tea"
 
     public Sprite milkSprite;
     public Sprite honeySprite;
     public Sprite iceSprite;
+    public Sprite coldMilkSprite;
+    public Sprite coldHoneySprite;
 
     [Header("Optional: make popup follow frog")]
     public Camera worldCamera;              // set main camera if using world->screen positioning
@@ -81,7 +84,7 @@ public class OrderPopupUI : MonoBehaviour
         if (orderText != null) orderText.text = co.GetOrderString();
 
         // --- TEA FILL sprite: use teaType enum to select matching sprite/index
-        Sprite fill = FindFillSpriteForTeaType(co.order.teaType);
+        Sprite fill = FindFillSpriteForTeaType(co.order.teaType, co.order.cupType);
         if (teaFillImage != null) { teaFillImage.sprite = fill; teaFillImage.enabled = (fill != null); }
 
         // cup sprite
@@ -89,8 +92,26 @@ public class OrderPopupUI : MonoBehaviour
         if (cupImage != null) { cupImage.sprite = cup; cupImage.enabled = (cup != null); }
 
         // extras
-        if (milkOverlay != null) { milkOverlay.sprite = milkSprite; milkOverlay.enabled = co.order.milk && milkSprite != null; }
-        if (honeyOverlay != null) { honeyOverlay.sprite = honeySprite; honeyOverlay.enabled = co.order.honey && honeySprite != null; }
+        if (milkOverlay != null && co.order.cupType == CupType.Tea) 
+        { 
+            milkOverlay.sprite = milkSprite; 
+            milkOverlay.enabled = co.order.milk && milkSprite != null; 
+        } 
+        else if (milkOverlay != null && co.order.cupType == CupType.Glass)
+        {
+            milkOverlay.sprite = coldMilkSprite;
+            milkOverlay.enabled = co.order.milk && coldMilkSprite != null;
+        }
+        if (honeyOverlay != null && co.order.cupType == CupType.Tea) 
+        { 
+            honeyOverlay.sprite = honeySprite; 
+            honeyOverlay.enabled = co.order.honey && honeySprite != null; 
+        }
+        else if (honeyOverlay != null && co.order.cupType == CupType.Glass)
+        {
+            honeyOverlay.sprite = coldHoneySprite;
+            honeyOverlay.enabled = co.order.honey && coldHoneySprite != null;
+        }
         if (iceOverlay != null) { iceOverlay.sprite = iceSprite; iceOverlay.enabled = co.order.ice && iceSprite != null; }
 
         // optional: move panel to follow frog's screen position
@@ -123,7 +144,7 @@ public class OrderPopupUI : MonoBehaviour
     }
 
     // Normalize teaColorNames entries and match against TeaType enum
-    Sprite FindFillSpriteForTeaType(TeaType tea)
+    Sprite FindFillSpriteForTeaType(TeaType tea, CupType cup)
     {
         if (teaFillSprites == null || teaFillSprites.Length == 0) return null;
 
@@ -135,7 +156,14 @@ public class OrderPopupUI : MonoBehaviour
                 if (string.IsNullOrEmpty(teaColorNames[i])) continue;
                 // normalize: remove "tea" and spaces
                 string norm = teaColorNames[i].ToLowerInvariant().Replace(" ", "").Replace("tea", "").Trim();
-                if (norm == key) return teaFillSprites[i];
+                if (norm == key && cup == CupType.Tea)
+                {
+                    return teaFillSprites[i];
+                }
+                else if (norm == key && cup == CupType.Glass)
+                {
+                    return coldTeaSprites[i];
+                }
             }
         }
 
@@ -148,6 +176,12 @@ public class OrderPopupUI : MonoBehaviour
         }
 
         // last resort return index 0
-        return teaFillSprites[0];
+        if (cup == CupType.Tea) {
+            return teaFillSprites[0];
+        }
+        else
+        {
+            return coldTeaSprites[0];
+        }
     }
 }

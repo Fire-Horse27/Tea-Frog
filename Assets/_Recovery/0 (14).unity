@@ -4290,10 +4290,10 @@ MonoBehaviour:
   - {fileID: 1442211898, guid: 553b44087679ced4a8d7edd649c6ab5e, type: 3}
   - {fileID: -513130904, guid: 553b44087679ced4a8d7edd649c6ab5e, type: 3}
   coldTeaSprites:
-  - {fileID: 1135524246, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
-  - {fileID: -1558713763, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
-  - {fileID: 438308738, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
-  - {fileID: -1170296316, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
+  - {fileID: -1967223623, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
+  - {fileID: 1738052338, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
+  - {fileID: 426456771, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
+  - {fileID: 1222112656, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
   - {fileID: -1933562893, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
   teaColorNames:
   - red tea
@@ -4306,8 +4306,8 @@ MonoBehaviour:
   iceSprite: {fileID: -162481482, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
   coldMilkSprite: {fileID: 788621080, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
   coldHoneySprite: {fileID: 960426620, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
-  worldCamera: {fileID: 519420031}
-  panelRect: {fileID: 765484646}
+  worldCamera: {fileID: 0}
+  panelRect: {fileID: 0}
 --- !u!114 &765403373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10803,7 +10803,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1420864109}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
