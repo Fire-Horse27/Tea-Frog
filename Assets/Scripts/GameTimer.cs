@@ -36,6 +36,11 @@ public class GameTimer : MonoBehaviour
         UpdateTimerDisplay();
     }
 
+    public float getTime()
+    {
+        return currentTime;
+    }
+
     public void TimerStart()
     {
         titlePanel.SetActive(false);

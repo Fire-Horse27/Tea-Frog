@@ -136,7 +136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &15954226
 RectTransform:
   m_ObjectHideFlags: 0
@@ -920,7 +920,6 @@ GameObject:
   - component: {fileID: 138852075}
   - component: {fileID: 138852074}
   - component: {fileID: 138852073}
-  - component: {fileID: 138852077}
   m_Layer: 0
   m_Name: bucket
   m_TagString: Untagged
@@ -1065,24 +1064,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &138852077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138852072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ebc14a5eeb80f04483a951cffc12b6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GrabItem
-  itemID: Bucket
-  promptOffsetY: 0.5
-  kettle: {fileID: 0}
-  showingPrompt: 0
-  defaultHotTea: 4
-  defaultIcedTea: 3
 --- !u!1 &148425772
 GameObject:
   m_ObjectHideFlags: 0
@@ -2538,7 +2519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &327010846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3196,6 +3177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 478478496}
   - component: {fileID: 478478495}
+  - component: {fileID: 478478497}
   m_Layer: 0
   m_Name: window pane 5
   m_TagString: Untagged
@@ -3276,6 +3258,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &478478497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478478494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 478478495}
+  skySprites:
+  - {fileID: 166498907, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -894362899, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &486383247
 GameObject:
   m_ObjectHideFlags: 0
@@ -3808,7 +3814,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.148148
+  orthographic size: 5.0925927
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3888,6 +3894,7 @@ GameObject:
   m_Component:
   - component: {fileID: 536088150}
   - component: {fileID: 536088149}
+  - component: {fileID: 536088151}
   m_Layer: 0
   m_Name: window pane 1 (2)
   m_TagString: Untagged
@@ -3968,6 +3975,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &536088151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536088148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 536088149}
+  skySprites:
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &550182488
 GameObject:
   m_ObjectHideFlags: 0
@@ -4254,15 +4285,12 @@ Transform:
   - {fileID: 444319704}
   - {fileID: 425453016}
   - {fileID: 237203215}
-  - {fileID: 1993227648}
   - {fileID: 2128256957}
   - {fileID: 292702762}
   - {fileID: 1443376378}
   - {fileID: 486383248}
   - {fileID: 2030229692}
   - {fileID: 1496568257}
-  - {fileID: 1949372074}
-  - {fileID: 1233466223}
   - {fileID: 185087720}
   m_Father: {fileID: 6308823299370517083}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4820,6 +4848,7 @@ GameObject:
   m_Component:
   - component: {fileID: 707857877}
   - component: {fileID: 707857876}
+  - component: {fileID: 707857878}
   m_Layer: 0
   m_Name: window pane 1 (1)
   m_TagString: Untagged
@@ -4900,6 +4929,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &707857878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707857875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 707857876}
+  skySprites:
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -464339759, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &762970363
 GameObject:
   m_ObjectHideFlags: 0
@@ -5310,6 +5363,7 @@ GameObject:
   m_Component:
   - component: {fileID: 780370306}
   - component: {fileID: 780370305}
+  - component: {fileID: 780370307}
   m_Layer: 0
   m_Name: window pane 4
   m_TagString: Untagged
@@ -5390,6 +5444,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &780370307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780370304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 780370305}
+  skySprites:
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &813079643
 GameObject:
   m_ObjectHideFlags: 0
@@ -8194,7 +8272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1012421407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8592,6 +8670,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1036419617}
   - component: {fileID: 1036419616}
+  - component: {fileID: 1036419618}
   m_Layer: 0
   m_Name: window pane 1 (3)
   m_TagString: Untagged
@@ -8672,6 +8751,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1036419618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036419615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 1036419616}
+  skySprites:
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &1044201865
 GameObject:
   m_ObjectHideFlags: 0
@@ -10482,96 +10585,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
---- !u!1 &1233466222
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1233466223}
-  - component: {fileID: 1233466224}
-  m_Layer: 0
-  m_Name: Full Bucket
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1233466223
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233466222}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 588906575}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1233466224
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233466222}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: -9159025541114810101, guid: 19e6e6bdd667b4c4f9f2617f62befe33, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.5555556, y: 0.5555556}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &1284957024
 GameObject:
   m_ObjectHideFlags: 0
@@ -10621,6 +10634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1324360073}
   - component: {fileID: 1324360072}
+  - component: {fileID: 1324360074}
   m_Layer: 0
   m_Name: window pane 1
   m_TagString: Untagged
@@ -10701,6 +10715,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1324360074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324360071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 1324360072}
+  skySprites:
+  - {fileID: 166498907, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -894362899, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &1342120735
 GameObject:
   m_ObjectHideFlags: 0
@@ -12413,7 +12451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1420864104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16257,6 +16295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1797526549}
   - component: {fileID: 1797526548}
+  - component: {fileID: 1797526550}
   m_Layer: 0
   m_Name: window pane 7
   m_TagString: Untagged
@@ -16337,6 +16376,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1797526550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797526547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 1797526548}
+  skySprites:
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -464339759, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &1806184606
 GameObject:
   m_ObjectHideFlags: 0
@@ -17393,96 +17456,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &1949372073
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1949372074}
-  - component: {fileID: 1949372075}
-  m_Layer: 0
-  m_Name: Empty Bucket
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1949372074
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1949372073}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 588906575}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1949372075
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1949372073}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 8621175409208223273, guid: 19e6e6bdd667b4c4f9f2617f62befe33, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.5555556, y: 0.5555556}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &1960246946
 GameObject:
   m_ObjectHideFlags: 0
@@ -17723,96 +17696,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978905204}
   m_CullTransparentMesh: 1
---- !u!1 &1993227647
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1993227648}
-  - component: {fileID: 1993227649}
-  m_Layer: 0
-  m_Name: Honey Glass
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1993227648
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993227647}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 588906575}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1993227649
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993227647}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 960426620, guid: 4d88bf4ba2a591d42aa9686e34c81a49, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.5555556, y: 0.5555556}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &2000925348
 GameObject:
   m_ObjectHideFlags: 0
@@ -17898,6 +17781,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2005449561}
   - component: {fileID: 2005449560}
+  - component: {fileID: 2005449562}
   m_Layer: 0
   m_Name: window pane 6
   m_TagString: Untagged
@@ -17978,6 +17862,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2005449562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005449559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
+  window: {fileID: 2005449560}
+  skySprites:
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  timer: {fileID: 1876007257}
+  dayLength: 30
+  tolerance: 0.02
+  triggerCooldown: 0.5
 --- !u!1 &2019863235
 GameObject:
   m_ObjectHideFlags: 0
@@ -18794,10 +18702,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MovementEngine
   smallLeapDistance: 0.3
   smallLeapDuration: 0.15
-  smallCooldown: 0.1
+  smallCooldown: 0.3
   largeLeapDistance: 1
   largeLeapDuration: 0.2
-  largeCooldown: 0.1
+  largeCooldown: 0.3
   chargeTime: 0.2
   initialGraceWindow: 0.06
   obstacleMask:
