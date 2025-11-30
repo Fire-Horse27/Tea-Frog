@@ -65,10 +65,17 @@ public class GrabItem : MonoBehaviour
 
     void HandleUse()
     {
+        if (itemID == "Hot" && heldTea.cupHeld == CupType.Bucket && heldTea.teaType == TeaType.Water)
+        {
+            var kettle = GetComponent<KettleFunction>();
+            if (kettle != null) kettle.Fill();
+            heldTea.ClearEverything();
+        }
+
         if (itemID == "Hot" && heldTea.cupHeld == CupType.Tea && heldTea.teaType == TeaType.Empty)
         {
             var kettle = GetComponent<KettleFunction>();
-            if (kettle != null) kettle.NextSprite();
+            if (kettle == null || !kettle.NextSprite()) return;
         }
 
         if (itemID == "Trashcan")

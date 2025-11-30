@@ -7,10 +7,19 @@ public class KettleFunction : MonoBehaviour
     private int currentIndex = 0;
 
     // Example called by trigger or other events
-    public void NextSprite()
+    public bool NextSprite()
     {
-        if (sprites == null || sprites.Length == 0) return;
+        if (sprites == null || sprites.Length == 0 || currentIndex == 3) return false;
         currentIndex = (currentIndex + 1) % sprites.Length;
         targetRenderer.sprite = sprites[currentIndex];
+        return true;
+    }
+
+    public void Fill()
+    {
+        if (sprites == null || sprites.Length == 0) return;
+        currentIndex = 0;
+        targetRenderer.sprite = sprites[currentIndex];
+        return;
     }
 }

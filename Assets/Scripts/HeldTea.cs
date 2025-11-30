@@ -67,16 +67,19 @@ public class HeldTea : MonoBehaviour
 
     public void SetBucket(string capacity)
     {
-        if (cupHeld == CupType.None)
+        if (cupHeld == CupType.None || cupHeld == CupType.Bucket)
         {
             cupHeld = CupType.Bucket;
+            DisableSprite("Empty Bucket");
+            DisableSprite("Full Bucket");
             EnableSprite(capacity + " Bucket");
+            if (capacity == "Full") teaType = TeaType.Water;
         }
     }
 
     public void SetTea(TeaType tea)
     {
-        if (teaType == TeaType.Water)
+        if (teaType == TeaType.Water && cupHeld != CupType.Bucket)
         {
             DisableSprite("Water " + cupHeld.ToString());
             teaType = tea;
@@ -201,24 +204,4 @@ public class HeldTea : MonoBehaviour
                 break;
         }
     }
-
-    // helper used by shim
-    //bool TryParseTeaType(string s, out TeaType result)
-    //{
-    //    result = TeaType.Red;
-    //    if (string.IsNullOrEmpty(s)) return false;
-
-    //    string clean = s.Trim().ToLowerInvariant();
-    //    if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
-
-    //    string candidate = CapitalizeFirst(clean);
-    //    return Enum.TryParse<TeaType>(candidate, true, out result);
-    //}
-
-    //string CapitalizeFirst(string s)
-    //{
-    //    if (string.IsNullOrEmpty(s)) return s;
-    //    if (s.Length == 1) return s.ToUpperInvariant();
-    //    return char.ToUpperInvariant(s[0]) + s.Substring(1);
-    //}
 }
