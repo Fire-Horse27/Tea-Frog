@@ -2620,7 +2620,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &334690752
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3177,7 +3177,6 @@ GameObject:
   m_Component:
   - component: {fileID: 478478496}
   - component: {fileID: 478478495}
-  - component: {fileID: 478478497}
   m_Layer: 0
   m_Name: window pane 5
   m_TagString: Untagged
@@ -3258,30 +3257,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &478478497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 478478494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 478478495}
-  skySprites:
-  - {fileID: 166498907, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -894362899, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &486383247
 GameObject:
   m_ObjectHideFlags: 0
@@ -3814,7 +3789,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5.0925927
+  orthographic size: 3.3703704
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3894,7 +3869,6 @@ GameObject:
   m_Component:
   - component: {fileID: 536088150}
   - component: {fileID: 536088149}
-  - component: {fileID: 536088151}
   m_Layer: 0
   m_Name: window pane 1 (2)
   m_TagString: Untagged
@@ -3975,30 +3949,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &536088151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 536088148}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 536088149}
-  skySprites:
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &550182488
 GameObject:
   m_ObjectHideFlags: 0
@@ -4848,7 +4798,6 @@ GameObject:
   m_Component:
   - component: {fileID: 707857877}
   - component: {fileID: 707857876}
-  - component: {fileID: 707857878}
   m_Layer: 0
   m_Name: window pane 1 (1)
   m_TagString: Untagged
@@ -4929,30 +4878,78 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &707857878
+--- !u!1 &761014773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761014775}
+  - component: {fileID: 761014774}
+  m_Layer: 0
+  m_Name: Windows
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &761014774
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 707857875}
+  m_GameObject: {fileID: 761014773}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 707857876}
-  skySprites:
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  windows:
+  - {fileID: 1324360072}
+  - {fileID: 707857876}
+  - {fileID: 478478495}
+  - {fileID: 1797526548}
+  - {fileID: 536088149}
+  - {fileID: 1036419616}
+  - {fileID: 780370305}
+  - {fileID: 2005449560}
+  daySky:
+  - {fileID: 1723267718, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: 166498907, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  sunsetSky:
   - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
   - {fileID: -464339759, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  nightSky:
+  - {fileID: 399016341, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  - {fileID: -894362899, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  clearDaySprite: {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  clearSunsetSprite: {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
+  clearNightSprite: {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
   timer: {fileID: 1876007257}
-  dayLength: 30
+  cloudSpeed: 1.5
+  dayLength: 100
   tolerance: 0.02
   triggerCooldown: 0.5
+--- !u!4 &761014775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761014773}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.44621, y: 3.67887, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1715046393}
+  - {fileID: 1179027002}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &762970363
 GameObject:
   m_ObjectHideFlags: 0
@@ -5363,7 +5360,6 @@ GameObject:
   m_Component:
   - component: {fileID: 780370306}
   - component: {fileID: 780370305}
-  - component: {fileID: 780370307}
   m_Layer: 0
   m_Name: window pane 4
   m_TagString: Untagged
@@ -5444,30 +5440,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &780370307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 780370304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 780370305}
-  skySprites:
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &813079643
 GameObject:
   m_ObjectHideFlags: 0
@@ -8670,7 +8642,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1036419617}
   - component: {fileID: 1036419616}
-  - component: {fileID: 1036419618}
   m_Layer: 0
   m_Name: window pane 1 (3)
   m_TagString: Untagged
@@ -8751,30 +8722,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1036419618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1036419615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 1036419616}
-  skySprites:
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &1044201865
 GameObject:
   m_ObjectHideFlags: 0
@@ -9830,8 +9777,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1179027001}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.44621, y: 3.67887, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9839,7 +9786,7 @@ Transform:
   - {fileID: 478478496}
   - {fileID: 2005449561}
   - {fileID: 1797526549}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 761014775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1180654170
 GameObject:
@@ -10634,7 +10581,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1324360073}
   - component: {fileID: 1324360072}
-  - component: {fileID: 1324360074}
   m_Layer: 0
   m_Name: window pane 1
   m_TagString: Untagged
@@ -10715,30 +10661,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1715046393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1324360074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1324360071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 1324360072}
-  skySprites:
-  - {fileID: 166498907, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -894362899, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &1342120735
 GameObject:
   m_ObjectHideFlags: 0
@@ -12560,6 +12482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverMenu
   timer: {fileID: 1876007257}
+  titlePanel: {fileID: 334690751}
 --- !u!1 &1429455987
 GameObject:
   m_ObjectHideFlags: 0
@@ -12922,6 +12845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverMenu
   timer: {fileID: 1876007257}
+  titlePanel: {fileID: 0}
 --- !u!1 &1496568256
 GameObject:
   m_ObjectHideFlags: 0
@@ -15870,8 +15794,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1715046392}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.44621, y: 3.67887, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15879,7 +15803,7 @@ Transform:
   - {fileID: 707857877}
   - {fileID: 536088150}
   - {fileID: 1036419617}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 761014775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1745153378
 GameObject:
@@ -16295,7 +16219,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1797526549}
   - component: {fileID: 1797526548}
-  - component: {fileID: 1797526550}
   m_Layer: 0
   m_Name: window pane 7
   m_TagString: Untagged
@@ -16376,30 +16299,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1797526550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797526547}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 1797526548}
-  skySprites:
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 71376604, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -464339759, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &1806184606
 GameObject:
   m_ObjectHideFlags: 0
@@ -17781,7 +17680,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2005449561}
   - component: {fileID: 2005449560}
-  - component: {fileID: 2005449562}
   m_Layer: 0
   m_Name: window pane 6
   m_TagString: Untagged
@@ -17862,30 +17760,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1179027002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2005449562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2005449559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6380766deef114a830695be8d0c157, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaylightSetter
-  window: {fileID: 2005449560}
-  skySprites:
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 281333836, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: -1143621737, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  - {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
-  timer: {fileID: 1876007257}
-  dayLength: 30
-  tolerance: 0.02
-  triggerCooldown: 0.5
 --- !u!1 &2019863235
 GameObject:
   m_ObjectHideFlags: 0
@@ -18866,8 +18740,7 @@ SceneRoots:
   - {fileID: 1937762872}
   - {fileID: 487122426}
   - {fileID: 1343569536}
-  - {fileID: 1715046393}
-  - {fileID: 1179027002}
+  - {fileID: 761014775}
   - {fileID: 874215939}
   - {fileID: 1012421410}
   - {fileID: 1806184610}

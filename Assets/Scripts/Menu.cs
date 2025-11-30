@@ -4,6 +4,12 @@ using UnityEngine.SceneManagement;
 public class Menu : MonoBehaviour
 {
     public GameTimer timer;
+    public GameObject titlePanel;
+
+    void Start()
+    {
+        titlePanel.SetActive(true);
+    }
 
     public void StartGame()
     {
