@@ -5,7 +5,8 @@ public enum CupType
 {
     None,
     Tea,
-    Glass
+    Glass,
+    Bucket
 }
 
 public enum TeaType

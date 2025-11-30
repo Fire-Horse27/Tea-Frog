@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -81,25 +80,4 @@ public class GrabItem : MonoBehaviour
             heldTea.SetHeld(itemID);
         }
     }
-
-    //bool TryParseTeaType(string s, out TeaType result)
-    //{
-    //    result = TeaType.Red;
-    //    if (string.IsNullOrEmpty(s)) return false;
-
-    //    string clean = s.Trim().ToLowerInvariant();
-    //    if (clean.EndsWith(" tea")) clean = clean.Substring(0, clean.Length - 4).Trim();
-
-    //    // capitalize first letter to match enum names (Red, Green, Black, Blue)
-    //    string candidate = CapitalizeFirst(clean);
-
-    //    return Enum.TryParse<TeaType>(candidate, true, out result);
-    //}
-
-    //string CapitalizeFirst(string s)
-    //{
-    //    if (string.IsNullOrEmpty(s)) return s;
-    //    if (s.Length == 1) return s.ToUpperInvariant();
-    //    return char.ToUpperInvariant(s[0]) + s.Substring(1);
-    //}
 }

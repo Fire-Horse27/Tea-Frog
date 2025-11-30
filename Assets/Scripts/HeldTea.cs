@@ -59,6 +59,19 @@ public class HeldTea : MonoBehaviour
             teaType = TeaType.Water;
             EnableSprite("Water " + cupHeld.ToString());
         }
+        else if (cupHeld == CupType.Bucket)
+        {
+            SetBucket("Full");
+        }
+    }
+
+    public void SetBucket(string capacity)
+    {
+        if (cupHeld == CupType.None)
+        {
+            cupHeld = CupType.Bucket;
+            EnableSprite(capacity + " Bucket");
+        }
     }
 
     public void SetTea(TeaType tea)
@@ -177,6 +190,10 @@ public class HeldTea : MonoBehaviour
 
             case "Red":
                 SetTea(TeaType.Red);
+                break;
+
+            case "Bucket":
+                SetBucket("Empty");
                 break;
 
             default:
