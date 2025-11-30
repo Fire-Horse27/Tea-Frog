@@ -6,6 +6,9 @@ public class Menu : MonoBehaviour
     public GameTimer timer;
     public GameObject titlePanel;
 
+    // Reference to the InfoPanelController (drag into inspector)
+    public InfoPanelController infoPanelController;
+
     void Start()
     {
         titlePanel.SetActive(true);
@@ -13,12 +16,23 @@ public class Menu : MonoBehaviour
 
     public void StartGame()
     {
+        // Start game normally
         timer.TimerStart();
+
+        // Immediately open the info panel after starting
+        if (infoPanelController != null)
+        {
+            infoPanelController.OpenPanel();
+        }
+        else
+        {
+            Debug.LogWarning("[Menu] No InfoPanelController assigned!");
+        }
     }
 
     public void RestartGame()
     {
-        Time.timeScale = 1f; // Unpause time
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
