@@ -3829,6 +3829,7 @@ MonoBehaviour:
   midOpenSprite: {fileID: 0}
   fullyOpenSprite: {fileID: 0}
   animationSpeed: 0.1
+  sr: {fileID: 0}
 --- !u!4 &487122426
 Transform:
   m_ObjectHideFlags: 0
@@ -12155,6 +12156,7 @@ MonoBehaviour:
   midOpenSprite: {fileID: 0}
   fullyOpenSprite: {fileID: 0}
   animationSpeed: 0.1
+  sr: {fileID: 0}
 --- !u!4 &1343569536
 Transform:
   m_ObjectHideFlags: 0
