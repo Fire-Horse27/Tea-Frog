@@ -18,6 +18,22 @@ public class FrogAI : MonoBehaviour
     [Header("Optional")]
     public Animator animator;
 
+    [Header("Sprite Cycle")]
+    public Sprite idleSprite;
+    public Sprite jumpSprite;
+    public Sprite fallSprite;
+
+    [Header("Directional Sprites")]
+    public Sprite[] rightSprites;   // [idle, jump, fall]
+    public Sprite[] leftSprites;    // [idle, jump, fall]
+    public Sprite[] upSprites;      // [idle, jump, fall]
+    public Sprite[] downSprites;    // [idle, jump, fall]
+
+    [Header("Sprite Cycle Settings")]
+    public float spriteCycleSpeed = 0.2f; // seconds per sprite
+
+    private SpriteRenderer sr; // reference to SpriteRenderer
+
     [HideInInspector] public Transform counterPoint;
     private PathfinderAStar pathfinder;
 
@@ -31,15 +47,25 @@ public class FrogAI : MonoBehaviour
     private bool served = false;
     private float orderTimer = 0f;
 
+    private int lastDirection = 0; // 0 = left, 1 = right
+    private int seatNumber = 1; 
+
     // Shared queue
     private static List<FrogAI> sharedQueue = new List<FrogAI>();
 
     private const float fallbackLateralSpacing = 0.35f;
     private const float fallbackForwardStep = 0.6f;
 
+    // Sprite cycling
+    private Vector3 lastPosition;
+    private float spriteTimer = 0f;
+    private int spriteIndex = 0;
+
     void Awake()
     {
         pathfinder = FindObjectOfType<PathfinderAStar>();
+        sr = GetComponent<SpriteRenderer>();
+        lastPosition = transform.position;
     }
 
     void OnEnable()
@@ -51,15 +77,14 @@ public class FrogAI : MonoBehaviour
         assignedSeat = null;
         queueIndex = -1;
 
-        // Ensure order state is reset when the frog (re)appears at the door/spawn.
         orderTaken = false;
         receivedOrder = false;
         orderTimer = orderTime;
+        lastPosition = transform.position;
+        spriteTimer = 0f;
+        spriteIndex = 0;
     }
 
-    /// <summary>
-    /// Called by spawner: place frog into the queue (do not go to counter directly).
-    /// </summary>
     public void InitializeNew()
     {
         orderTimer = orderTime;
@@ -95,7 +120,6 @@ public class FrogAI : MonoBehaviour
         if (frog == null) return;
         if (!sharedQueue.Contains(frog)) return;
 
-        // free reserved spot in manager if any
         if (CafeManager.Instance != null && frog.queueIndex >= 0)
             CafeManager.Instance.FreeQueueSpot(frog.queueIndex, frog);
 
@@ -104,13 +128,6 @@ public class FrogAI : MonoBehaviour
         UpdateQueuePositions();
     }
 
-    /// <summary>
-    /// Assign frogs to queue spots in queue order and reserve spots immediately in CafeManager.
-    /// This implementation ties each frog's queueIndex to its index in sharedQueue:
-    /// sharedQueue[0] => front of queue; mapping to the front-most queuePoint.
-    /// It deterministically attempts to reserve the matching spot in the CafeManager;
-    /// if reservation fails, it searches for an alternate free spot, otherwise falls back.
-    /// </summary>
     private static void UpdateQueuePositions()
     {
         if (sharedQueue == null) return;
@@ -118,7 +135,6 @@ public class FrogAI : MonoBehaviour
         Transform[] queuePoints = (CafeManager.Instance != null) ? CafeManager.Instance.queuePoints : null;
         int spotCount = (queuePoints != null) ? queuePoints.Length : 0;
 
-        // Fallback if no queuePoints: map index -> fallback position
         if (spotCount == 0)
         {
             for (int i = 0; i < sharedQueue.Count; i++)
@@ -131,8 +147,6 @@ public class FrogAI : MonoBehaviour
             return;
         }
 
-        // For each frog in queue order, compute the desired spot index.
-        // Convention preserved: the "front" of queue maps to the last queue point (spotCount - 1).
         for (int q = 0; q < sharedQueue.Count; q++)
         {
             var frog = sharedQueue[q];
@@ -141,27 +155,22 @@ public class FrogAI : MonoBehaviour
             int desiredSpot = Mathf.Clamp(spotCount - 1 - q, 0, spotCount - 1);
             int chosenSpot = -1;
 
-            // If this frog previously reserved a different spot, free it first (so reservations stay accurate).
             if (CafeManager.Instance != null && frog.queueIndex >= 0 && frog.queueIndex != desiredSpot)
             {
                 CafeManager.Instance.FreeQueueSpot(frog.queueIndex, frog);
             }
 
-            // Try to reserve the desired spot (or reuse if already ours).
             if (CafeManager.Instance != null)
             {
-                // If the spot is already occupied by someone else, we'll search for next best below.
                 var occupant = CafeManager.Instance.queueOccupant[desiredSpot];
                 if (occupant == null || occupant == frog)
                 {
-                    // TryReserve is idempotent and will succeed if the spot is free or already ours.
                     if (CafeManager.Instance.TryReserveQueueSpot(desiredSpot, frog))
                     {
                         chosenSpot = desiredSpot;
                     }
                 }
 
-                // If we couldn't reserve desiredSpot, find the nearest available spot searching downward.
                 if (chosenSpot == -1)
                 {
                     for (int s = desiredSpot; s >= 0; s--)
@@ -180,17 +189,14 @@ public class FrogAI : MonoBehaviour
             }
             else
             {
-                // No CafeManager: just use desired spot index for movement mapping
                 chosenSpot = desiredSpot;
             }
 
-            // If still no chosen spot (all reservations failed), fall back to desiredSpot for movement but do not reserve.
             if (chosenSpot == -1)
             {
                 chosenSpot = desiredSpot;
             }
 
-            // Assign and instruct movement
             frog.queueIndex = chosenSpot;
             if (chosenSpot >= 0 && chosenSpot < spotCount)
             {
@@ -203,15 +209,11 @@ public class FrogAI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Pops front frog and updates positions.
-    /// </summary>
     public static FrogAI PopFrontOfQueue()
     {
         if (sharedQueue == null || sharedQueue.Count == 0) return null;
         FrogAI f = sharedQueue[0];
 
-        // free its reserved spot in manager before removing
         if (CafeManager.Instance != null && f != null && f.queueIndex >= 0)
         {
             CafeManager.Instance.FreeQueueSpot(f.queueIndex, f);
@@ -237,7 +239,6 @@ public class FrogAI : MonoBehaviour
 
     public void AssignSeat(Seat seat)
     {
-        // free any reservation & remove from queue
         RemoveFromQueue(this);
 
         assignedSeat = seat;
@@ -259,6 +260,9 @@ public class FrogAI : MonoBehaviour
         Vector3 seatPos = assignedSeat.SeatPoint.position;
         Vector3 dirToSeat = (seatPos - transform.position).normalized;
         if (dirToSeat.sqrMagnitude < 0.0001f) dirToSeat = Vector3.up;
+
+        seatNumber = assignedSeat.seatNumber;
+        Debug.Log(seatNumber);
 
         float forwardStep = 0.6f;
         Vector3 forwardPoint = transform.position + dirToSeat * forwardStep;
@@ -283,8 +287,8 @@ public class FrogAI : MonoBehaviour
         if ((p1 == null || p1.Count == 0) || (p2 == null || p2.Count == 0))
         {
             List<Vector3> direct = pathfinder.FindPath(transform.position, seatPos);
-            if (direct != null && direct.Count > 0) { ClampPathToPlane(direct); path = direct; pathIndex = 0; UpdateAnimatorWalking(true); return; }
-            if (p1 != null && p1.Count > 0) { ClampPathToPlane(p1); path = p1; pathIndex = 0; UpdateAnimatorWalking(true); return; }
+            if (direct != null && direct.Count > 0) { ClampPathToPlane(direct); path = direct; pathIndex = 0; return; }
+            if (p1 != null && p1.Count > 0) { ClampPathToPlane(p1); path = p1; pathIndex = 0; return; }
             MoveTo(seatPos); return;
         }
 
@@ -302,7 +306,6 @@ public class FrogAI : MonoBehaviour
         ClampPathToPlane(combined);
         path = combined;
         pathIndex = 0;
-        UpdateAnimatorWalking(true);
         queueIndex = -1;
     }
 
@@ -316,13 +319,11 @@ public class FrogAI : MonoBehaviour
             ClampPathToPlane(raw);
             path = raw;
             pathIndex = 0;
-            UpdateAnimatorWalking(true);
         }
         else
         {
             path = new List<Vector3> { new Vector3(worldTarget.x, worldTarget.y, transform.position.z) };
             pathIndex = 0;
-            UpdateAnimatorWalking(true);
         }
     }
 
@@ -331,14 +332,52 @@ public class FrogAI : MonoBehaviour
         if (path != null && pathIndex < path.Count)
         {
             Vector3 target = path[pathIndex];
+            Vector3 delta = target - transform.position;
+
             transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
-            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
+            // Determine movement direction
+            float deltaX = transform.position.x - lastPosition.x;
+            float deltaY = transform.position.y - lastPosition.y;
+
+            Sprite[] currentSprites = null;
+
+            if (Mathf.Abs(deltaX) > Mathf.Abs(deltaY))
+            {
+                if (deltaX > 0.001f) { currentSprites = rightSprites; sr.flipX = true; lastDirection = 0; }
+                else if (deltaX < -0.001f) { currentSprites = leftSprites; sr.flipX = false; lastDirection = 1; }
+            }
+            else if (Mathf.Abs(deltaY) > Mathf.Abs(deltaX))
+            {
+                if (deltaY > 0.001f) currentSprites = upSprites;
+                else if (deltaY < -0.001f) currentSprites = downSprites;
+            }
+
+            // Cycle sprite
+            if (currentSprites != null && currentSprites.Length == 3)
+            {
+                spriteTimer += Time.deltaTime;
+                if (spriteTimer >= spriteCycleSpeed)
+                {
+                    spriteTimer = 0f;
+                    spriteIndex = (spriteIndex + 1) % 3;
+                }
+                sr.sprite = currentSprites[spriteIndex];
+            }
+
+            lastPosition = transform.position;
 
             if (Vector3.Distance(new Vector2(transform.position.x, transform.position.y),
                                  new Vector2(target.x, target.y)) <= arriveThreshold)
             {
                 pathIndex++;
-                if (pathIndex >= path.Count) OnReachedPathEnd();
+                if (pathIndex >= path.Count)
+                {
+                    if (leftSprites != null && lastDirection == 0) sr.sprite = leftSprites[0];
+                    if (rightSprites != null && lastDirection == 1) sr.sprite = rightSprites[0];
+                    if (rightSprites != null && seatNumber % 2 == 1) sr.sprite = rightSprites[0];
+                        OnReachedPathEnd();
+                }
             }
         }
         else
@@ -355,42 +394,30 @@ public class FrogAI : MonoBehaviour
         }
     }
 
-    // Replace the existing OnReachedPathEnd() with this:
+
+
     void OnReachedPathEnd()
     {
-        UpdateAnimatorWalking(false);
-
-        // If we haven't reached counter yet, treat this as arrival to counter
         if (!reachedCounter && counterPoint != null)
         {
-            // Only set reached if we are physically at the counterPoint
             if (IsAtCounter())
             {
                 reachedCounter = true;
-
-                // If someone else is already occupying the counter (front of shared queue),
-                // and it's not us, join the queue instead of staying at the counter.
                 FrogAI currentFront = GetFrontOfQueue();
                 if (currentFront != null && currentFront != this && currentFront.IsAtCounter())
                 {
                     JoinQueue();
                     return;
                 }
-
-                // NOTE: Do NOT auto-update path/assign seat here based on orderTaken.
-                // The seat assignment will happen only when OrderTakenByPlayer() is called.
-                // If order hasn't been taken, become front of the queue and wait.
                 if (!sharedQueue.Contains(this))
                 {
                     sharedQueue.Insert(0, this);
                     UpdateQueuePositions();
                 }
-                // Remain at counter waiting for the player's interaction.
                 return;
             }
             else
             {
-                // If this path ended at a queue point and we are at our queueIndex, confirm reservation
                 if (queueIndex >= 0 && CafeManager.Instance != null)
                 {
                     CafeManager.Instance.ConfirmQueueSpot(queueIndex, this);
@@ -398,7 +425,6 @@ public class FrogAI : MonoBehaviour
             }
         }
 
-        // If reached a seat
         if (assignedSeat != null)
         {
             Vector3 seat = assignedSeat.SeatPoint.position;
@@ -408,56 +434,32 @@ public class FrogAI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called when the player attempts to take this frog's order.
-    /// Only proceeds if the frog is physically at the counter. If not at the
-    /// counter, nothing happens (order is not marked taken).
-    /// </summary>
     public void OrderTakenByPlayer()
     {
-        // Only allow taking the order if the frog is actually at the counter.
-        if (!IsAtCounter())
-        {
-            // Safety: do nothing if not at counter. Cashregister normally
-            // prevents calling this when not at counter, but enforce here too.
-            return;
-        }
-
-        // If someone else is front and at counter (not this frog), don't steal the turn.
+        if (!IsAtCounter()) return;
         FrogAI currentFront = GetFrontOfQueue();
-        if (currentFront != null && currentFront != this && currentFront.IsAtCounter())
-        {
-            // Not our turn — do nothing.
-            return;
-        }
+        if (currentFront != null && currentFront != this && currentFront.IsAtCounter()) return;
 
-        // Mark that this frog's order has been taken.
         orderTaken = true;
 
-        //yield return new WaitForSeconds(2);
-
-        // Remove reservations / queue entry if any.
         if (sharedQueue.Contains(this))
         {
             if (GetFrontOfQueue() == this) PopFrontOfQueue();
             else RemoveFromQueue(this);
         }
 
-        // Try to assign a seat immediately.
         if (CafeManager.Instance != null && CafeManager.Instance.TryAssignSeat(this, out Seat seat))
         {
             AssignSeat(seat);
         }
         else
         {
-            // If no seat available, keep expected behavior (join queue).
             JoinQueue();
         }
     }
 
     IEnumerator SeatedRoutine()
     {
-        UpdateAnimatorSit(true);
         orderTimer = orderTime;
         while (!served && orderTimer > 0f) yield return null;
         if (served) { yield return new WaitForSeconds(servedLinger); StartCoroutine(LeaveRoutine()); }
@@ -466,16 +468,11 @@ public class FrogAI : MonoBehaviour
 
     public void Serve()
     {
-        if (assignedSeat == null) return;
         served = true;
-        UpdateAnimatorHappy();
     }
 
     IEnumerator LeaveRoutine()
     {
-        UpdateAnimatorSit(false);
-        UpdateAnimatorWalking(true);
-
         if (assignedSeat != null)
         {
             CafeManager.Instance.NotifySeatFreed(assignedSeat);
@@ -508,23 +505,9 @@ public class FrogAI : MonoBehaviour
         receivedOrder = false;
     }
 
-    #endregion
-
     #region Helpers & Anim
 
-    void UpdateAnimatorWalking(bool walking) { if (animator != null) animator.SetBool("isWalking", walking); }
-    void UpdateAnimatorSit(bool sit) { if (animator != null) animator.SetBool("isSitting", sit); }
-    void UpdateAnimatorHappy() { if (animator != null) animator.SetTrigger("isHappy"); }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            // handled by Cashregister/Player interaction; not used here directly
-        }
-    }
-
-    private void ClampPathToPlane(List<Vector3> p)
+    void ClampPathToPlane(List<Vector3> p)
     {
         if (p == null) return;
         float z = transform.position.z;
@@ -589,16 +572,10 @@ public class FrogAI : MonoBehaviour
 
     #endregion
 
-    // Force the frog to be marked served and start leaving immediately.
-    // This covers the case where Serve() might require an assignedSeat; this will work either way.
     public void ForceServeAndLeave()
     {
-        // mark served and play happy animation
         served = true;
-        UpdateAnimatorHappy();
 
-        // If the frog has a reserved seat, notify CafeManager that the seat is free now
-        // (this avoids seat getting stuck). Then clear the assignedSeat reference.
         if (assignedSeat != null)
         {
             if (CafeManager.Instance != null)
@@ -606,12 +583,8 @@ public class FrogAI : MonoBehaviour
             assignedSeat = null;
         }
 
-        // stop any existing coroutines for movement/waiting to avoid conflicting state
         StopAllCoroutines();
-
-        // Start the leaving sequence (uses same LeaveRoutine already in FrogAI)
         StartCoroutine(LeaveRoutine());
     }
-
-
 }
+#endregion

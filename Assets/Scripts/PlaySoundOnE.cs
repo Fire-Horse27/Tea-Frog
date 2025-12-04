@@ -8,13 +8,13 @@ public class AreaSoundTrigger : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("AreaSoundTrigger initialized.");
+        //Debug.Log("AreaSoundTrigger initialized.");
         // Get the AudioSource component attached to this GameObject
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            Debug.LogError("AudioSource component not found on this GameObject!");
-        }
+        //if (audioSource == null)
+        //{
+        //    Debug.LogError("AudioSource component not found on this GameObject!");
+        //}
         // Optional: assign the clip to the AudioSource if using Play()
         // audioSource.clip = soundToPlay; 
     }
@@ -35,7 +35,7 @@ public class AreaSoundTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isInArea = true;
-            Debug.Log("Player entered the sound trigger area.");
+            //Debug.Log("Player entered the sound trigger area.");
         }
     }
 
@@ -45,7 +45,7 @@ public class AreaSoundTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isInArea = false;
-            Debug.Log("Player exited the sound trigger area.");
+            //Debug.Log("Player exited the sound trigger area.");
         }
     }
 }

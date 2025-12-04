@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DoorAnimation : MonoBehaviour
+public class DoorAnimation2 : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer door1;
     [SerializeField] private SpriteRenderer door2;

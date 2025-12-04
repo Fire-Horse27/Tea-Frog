@@ -574,6 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
+  seatNumber: 3
 --- !u!1 &59657792
 GameObject:
   m_ObjectHideFlags: 0
@@ -2346,6 +2347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
+  seatNumber: 6
 --- !u!1 &285864082
 GameObject:
   m_ObjectHideFlags: 0
@@ -3823,7 +3825,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37dc4c7e2a64c774b8cc1543a277c24f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorOpen
-  triggerTag: Player
+  closedSprite: {fileID: 0}
+  midOpenSprite: {fileID: 0}
+  fullyOpenSprite: {fileID: 0}
+  animationSpeed: 0.1
 --- !u!4 &487122426
 Transform:
   m_ObjectHideFlags: 0
@@ -10874,6 +10879,26 @@ MonoBehaviour:
   orderTaken: 0
   receivedOrder: 0
   animator: {fileID: 0}
+  idleSprite: {fileID: 6259531633548782045, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  jumpSprite: {fileID: -828374906388673919, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  fallSprite: {fileID: 7246431493041086568, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  rightSprites:
+  - {fileID: 6259531633548782045, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: -828374906388673919, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: 7246431493041086568, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  leftSprites:
+  - {fileID: 6259531633548782045, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: -828374906388673919, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: 7246431493041086568, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  upSprites:
+  - {fileID: 4567922407055821526, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: 1571679483230864540, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: 15967647, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  downSprites:
+  - {fileID: -532387244844493849, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: -8226655398533471557, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  - {fileID: -3044319002100946188, guid: 4a11393f9ed61ae4bb881fef56e2f593, type: 3}
+  spriteCycleSpeed: 0.2
   counterPoint: {fileID: 0}
   queueIndex: -1
 --- !u!212 &1180654184
@@ -11530,6 +11555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
+  seatNumber: 5
 --- !u!1 &1284957024
 GameObject:
   m_ObjectHideFlags: 0
@@ -12047,6 +12073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
+  seatNumber: 1
 --- !u!1 &1343569533
 GameObject:
   m_ObjectHideFlags: 0
@@ -12124,7 +12151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37dc4c7e2a64c774b8cc1543a277c24f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorOpen
-  triggerTag: Player
+  closedSprite: {fileID: 0}
+  midOpenSprite: {fileID: 0}
+  fullyOpenSprite: {fileID: 0}
+  animationSpeed: 0.1
 --- !u!4 &1343569536
 Transform:
   m_ObjectHideFlags: 0
@@ -18728,6 +18758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
+  seatNumber: 2
 --- !u!1 &1910410767
 GameObject:
   m_ObjectHideFlags: 0
@@ -20257,6 +20288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6085a66dd5b0bc4aad35e4db18d3e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seat
+  seatNumber: 4
 --- !u!1 &2085925501
 GameObject:
   m_ObjectHideFlags: 0

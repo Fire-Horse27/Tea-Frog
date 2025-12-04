@@ -40,8 +40,8 @@ public class DaylightSetter : MonoBehaviour
         lastTriggerTime = -999f;
         cloudOffset = 0f;
 
-        if (windows == null || windows.Length < animatedWindowCount)
-            Debug.LogWarning("DaylightSetter: windows array should contain at least " + animatedWindowCount + " entries (animated windows 0..3).");
+        //if (windows == null || windows.Length < animatedWindowCount)
+            //Debug.LogWarning("DaylightSetter: windows array should contain at least " + animatedWindowCount + " entries (animated windows 0..3).");
     }
 
     void OnDestroy()
@@ -109,7 +109,7 @@ public class DaylightSetter : MonoBehaviour
         }
 
         cloudOffset = 0f;
-        Debug.Log($"DaylightSetter: Phase changed to {phase} at timer {timer.getTime():F2}");
+        //Debug.Log($"DaylightSetter: Phase changed to {phase} at timer {timer.getTime():F2}");
     }
 
     Sprite GetClearSpriteForPhase()

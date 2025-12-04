@@ -1,30 +1,63 @@
+using System.Collections;
 using UnityEngine;
 
-public class DoorOpen : MonoBehaviour
+public class DoorAnimation : MonoBehaviour
 {
-    public string triggerTag = "Player";
+    [Header("Door Sprites")]
+    public Sprite closedSprite;
+    public Sprite midOpenSprite;
+    public Sprite fullyOpenSprite;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    [Header("Animation Settings")]
+    public float animationSpeed = 0.1f; // time between sprite changes
+
+    private SpriteRenderer sr;
+
+    private void Awake()
     {
-        if (other.CompareTag(triggerTag))
+        sr = GetComponent<SpriteRenderer>();
+        if (sr == null)
         {
-            SetChildrenVisible(false);
+            Debug.LogError("DoorAnimation requires a SpriteRenderer on the same GameObject.");
+        }
+        sr.sprite = closedSprite;
+    }
+
+    public void OpenDoor()
+    {
+        StopAllCoroutines();
+        StartCoroutine(OpenCoroutine());
+    }
+
+    public void CloseDoor()
+    {
+        StopAllCoroutines();
+        StartCoroutine(CloseCoroutine());
+    }
+
+    private IEnumerator OpenCoroutine()
+    {
+        if (midOpenSprite != null)
+        {
+            sr.sprite = midOpenSprite;
+            yield return new WaitForSeconds(animationSpeed);
+        }
+        if (fullyOpenSprite != null)
+        {
+            sr.sprite = fullyOpenSprite;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    private IEnumerator CloseCoroutine()
     {
-        if (other.CompareTag(triggerTag))
+        if (midOpenSprite != null)
         {
-            SetChildrenVisible(true);
+            sr.sprite = midOpenSprite;
+            yield return new WaitForSeconds(animationSpeed);
         }
-    }
-
-    private void SetChildrenVisible(bool state)
-    {
-        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+        if (closedSprite != null)
         {
-            sr.enabled = state;
+            sr.sprite = closedSprite;
         }
     }
 }
