@@ -10,6 +10,13 @@ public class HeldTea : MonoBehaviour
     private bool hasHoney;
     private bool hasIce;
 
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     // -----------------------
     // Simple setters
     // -----------------------
@@ -58,6 +65,7 @@ public class HeldTea : MonoBehaviour
         {
             teaType = TeaType.Water;
             EnableSprite("Water " + cupHeld.ToString());
+            audioSource.PlayOneShot(audioSource.clip);
         }
         else if (cupHeld == CupType.Bucket)
         {
