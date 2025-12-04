@@ -3655,6 +3655,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &486383247
 GameObject:
   m_ObjectHideFlags: 0
@@ -4446,6 +4447,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &550182488
 GameObject:
   m_ObjectHideFlags: 0
@@ -4966,6 +4968,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeldTea
   cupHeld: 0
   teaType: 0
+  milkAlpha: 0.5
 --- !u!82 &588906578
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5724,6 +5727,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &762970363
 GameObject:
   m_ObjectHideFlags: 0
@@ -5817,7 +5821,7 @@ GameObject:
   - component: {fileID: 765403373}
   - component: {fileID: 765403372}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: Order Popup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6275,6 +6279,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &812514697
 GameObject:
   m_ObjectHideFlags: 0
@@ -9639,6 +9644,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &1044201865
 GameObject:
   m_ObjectHideFlags: 0
@@ -11801,6 +11807,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &1333785290
 GameObject:
   m_ObjectHideFlags: 0
@@ -17446,6 +17453,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 100
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!4 &1763187521
 Transform:
   m_ObjectHideFlags: 0
@@ -17883,6 +17891,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &1806184606
 GameObject:
   m_ObjectHideFlags: 0
@@ -19651,6 +19660,7 @@ MonoBehaviour:
   cloudSpeed: 1
   dayLength: 30
   triggerCooldown: 0.5
+  triggerEpsilon: 0.05
 --- !u!1 &2017191337
 GameObject:
   m_ObjectHideFlags: 0

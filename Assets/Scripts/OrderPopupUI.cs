@@ -43,6 +43,17 @@ public class OrderPopupUI : MonoBehaviour
         panelVisible = false;
     }
 
+    // Set transparency (0f = invisible, 1f = fully opaque)
+    void SetMilkTransparency(float alpha)
+    {
+        if (milkOverlay != null)
+        {
+            Color c = milkOverlay.color;
+            c.a = alpha;
+            milkOverlay.color = c;
+        }
+    }
+
     void Update()
     {
         if (player == null || panelRoot == null)
@@ -92,15 +103,19 @@ public class OrderPopupUI : MonoBehaviour
         if (cupImage != null) { cupImage.sprite = cup; cupImage.enabled = (cup != null); }
 
         // extras
-        if (milkOverlay != null && co.order.cupType == CupType.Tea) 
-        { 
-            milkOverlay.sprite = milkSprite; 
-            milkOverlay.enabled = co.order.milk && milkSprite != null; 
-        } 
+        if (milkOverlay != null && co.order.cupType == CupType.Tea)
+        {
+            milkOverlay.sprite = milkSprite;
+            milkOverlay.enabled = co.order.milk && milkSprite != null;
+
+            SetMilkTransparency(0.5f); // example: 50% transparent
+        }
         else if (milkOverlay != null && co.order.cupType == CupType.Glass)
         {
             milkOverlay.sprite = coldMilkSprite;
             milkOverlay.enabled = co.order.milk && coldMilkSprite != null;
+
+            SetMilkTransparency(0.5f); // can pick different transparency here too
         }
         if (honeyOverlay != null && co.order.cupType == CupType.Tea) 
         { 

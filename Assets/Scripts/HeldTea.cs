@@ -10,11 +10,23 @@ public class HeldTea : MonoBehaviour
     private bool hasHoney;
     private bool hasIce;
 
+    [Range(0f, 1f)]
+    public float milkAlpha = 0.5f;
+
     private AudioSource audioSource;
 
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+    }
+
+    void SetSpriteAlpha(SpriteRenderer sr, float alpha)
+    {
+        if (sr == null) return;
+
+        Color c = sr.color;
+        c.a = alpha;
+        sr.color = c;
     }
 
     // -----------------------
@@ -34,9 +46,21 @@ public class HeldTea : MonoBehaviour
         if (teaType != TeaType.Empty && teaType != TeaType.Water)
         {
             hasMilk = true;
-            EnableSprite("Milk " + cupHeld.ToString());
+
+            string spriteName = "Milk " + cupHeld.ToString();
+            EnableSprite(spriteName);
+
+            // set transparency on the milk sprite
+            var t = transform.Find(spriteName);
+            if (t != null)
+            {
+                var sr = t.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                    SetSpriteAlpha(sr, milkAlpha);
+            }
         }
     }
+
 
     public void AddHoney()
     {

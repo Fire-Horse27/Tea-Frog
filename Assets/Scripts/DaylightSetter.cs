@@ -3,14 +3,14 @@ using UnityEngine;
 public class DaylightSetter : MonoBehaviour
 {
     [Header("Windows (drag in order: animated first, then clear-sky)")]
-    public SpriteRenderer[] windows;   // windows[0..2] animate, windows[3..7] clear sky
+    public SpriteRenderer[] windows;   // windows[0..3] animate, windows[4..] clear sky
 
-    [Header("Sky sprite sets")]
+    [Header("Sky sprite sets (for animated windows)")]
     public Sprite[] daySky;
     public Sprite[] sunsetSky;
     public Sprite[] nightSky;
 
-    [Header("Optional explicit clear-sky sprites")]
+    [Header("Optional clear-sky sprites")]
     public Sprite clearDaySprite;
     public Sprite clearSunsetSprite;
     public Sprite clearNightSprite;
@@ -18,9 +18,10 @@ public class DaylightSetter : MonoBehaviour
     public GameTimer timer;
 
     [Header("Settings")]
-    public float cloudSpeed = 1f;
-    public float dayLength = 1f;
-    public float triggerCooldown = 0.5f;
+    public float cloudSpeed = 4f;      // how fast the animation cycles (frames per second)
+    public float dayLength = 10f;      // how long each phase lasts (same units as timer.getTime())
+    public float triggerCooldown = 0.5f; // seconds between allowed phase triggers
+    public float triggerEpsilon = 0.05f; // tolerance for "divisible" check
 
     private enum Phase { Day, Sunset, Night }
     private Phase phase = Phase.Day;
@@ -30,19 +31,17 @@ public class DaylightSetter : MonoBehaviour
     private float lastTriggerTime = -999f;
     private bool isShuttingDown = false;
 
-    private const int animatedWindowCount = 3;
-    private int lastPeriod = 0; // <-- force start in DAY
+    private const int animatedWindowCount = 4; // windows 0,1,2,3 animate
 
     void Start()
     {
-        // Always begin in Day
         phase = Phase.Day;
-        lastPeriod = Mathf.FloorToInt(timer.startTime / dayLength);
+        currentSprites = (daySky != null && daySky.Length > 0) ? daySky : null;
+        lastTriggerTime = -999f;
+        cloudOffset = 0f;
 
-        // Choose Day sprites
-        if (daySky != null && daySky.Length > 0) currentSprites = daySky;
-        else if (sunsetSky != null && sunsetSky.Length > 0) currentSprites = sunsetSky;
-        else currentSprites = nightSky;
+        if (windows == null || windows.Length < animatedWindowCount)
+            Debug.LogWarning("DaylightSetter: windows array should contain at least " + animatedWindowCount + " entries (animated windows 0..3).");
     }
 
     void OnDestroy()
@@ -58,18 +57,14 @@ public class DaylightSetter : MonoBehaviour
         if (dayLength <= 0f) return;
 
         float t = timer.getTime();
-        int currentPeriod = Mathf.FloorToInt(t / dayLength);
+        float mod = t % dayLength;
 
-        // Advance only when entering new period
-        if (currentPeriod > lastPeriod && Time.time - lastTriggerTime > triggerCooldown)
+        if (t >= dayLength && mod <= triggerEpsilon && (Time.time - lastTriggerTime) > triggerCooldown)
         {
-            Debug.Log("Entered a new period. Time: " + timer.getTime());
             lastTriggerTime = Time.time;
-            lastPeriod = currentPeriod;
             AdvancePhase();
         }
 
-        // Animate first 3 windows
         cloudOffset += cloudSpeed * Time.deltaTime;
         int baseIndex = Mathf.FloorToInt(cloudOffset);
 
@@ -80,7 +75,6 @@ public class DaylightSetter : MonoBehaviour
 
             if (i < animatedWindowCount)
             {
-                // animated window
                 if (currentSprites != null && currentSprites.Length > 0)
                 {
                     int idx = (baseIndex + i) % currentSprites.Length;
@@ -90,8 +84,8 @@ public class DaylightSetter : MonoBehaviour
             }
             else
             {
-                // clear-sky windows
-                wr.sprite = GetClearSpriteForPhase();
+                Sprite clear = GetClearSpriteForPhase();
+                if (clear != null) wr.sprite = clear;
             }
         }
     }
@@ -114,8 +108,8 @@ public class DaylightSetter : MonoBehaviour
                 break;
         }
 
-        // Optional: reset cloud animation per phase
-        // cloudOffset = 0f;
+        cloudOffset = 0f;
+        Debug.Log($"DaylightSetter: Phase changed to {phase} at timer {timer.getTime():F2}");
     }
 
     Sprite GetClearSpriteForPhase()
@@ -126,12 +120,10 @@ public class DaylightSetter : MonoBehaviour
                 if (clearDaySprite != null) return clearDaySprite;
                 if (daySky != null && daySky.Length > 0) return daySky[0];
                 break;
-
             case Phase.Sunset:
                 if (clearSunsetSprite != null) return clearSunsetSprite;
                 if (sunsetSky != null && sunsetSky.Length > 0) return sunsetSky[0];
                 break;
-
             case Phase.Night:
                 if (clearNightSprite != null) return clearNightSprite;
                 if (nightSky != null && nightSky.Length > 0) return nightSky[0];
