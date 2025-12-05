@@ -28,7 +28,7 @@ public class DaylightSetter : MonoBehaviour
 
     private Sprite[] currentSprites;
     private float cloudOffset = 0f;
-    private float lastTriggerTime = -999f;
+    private float lastTriggerTime = 0f;
     private bool isShuttingDown = false;
 
     private const int animatedWindowCount = 4; // windows 0,1,2,3 animate
