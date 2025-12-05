@@ -5,6 +5,7 @@ using UnityEngine;
 /// Requires the frog to have a Collider2D set as "Is Trigger".
 /// Shows the shared E-button when the player enters the frog's trigger,
 /// and listens for the E key to attempt a serve / take-order action.
+/// Integrates with GameEngine: listens for resets and notifies the engine when a customer is served.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class CustomerServeInteract : MonoBehaviour
@@ -28,20 +29,31 @@ public class CustomerServeInteract : MonoBehaviour
         customerOrder = GetComponent<CustomerOrder>();
         frogAI = GetComponent<FrogAI>();
 
-        // ensure collider is trigger
+        // ensure collider is trigger (optional warning)
         var col = GetComponent<Collider2D>();
-        //if (col != null && !col.isTrigger)
-            //Debug.LogWarning($"[CustomerServeInteract] Collider on {name} should be set to 'Is Trigger' for this interaction to work.", this);
+        // if (col != null && !col.isTrigger) Debug.LogWarning($"[CustomerServeInteract] Collider on {name} should be set to 'Is Trigger'.", this);
+    }
+
+    void OnDisable()
+    {
+        // hide shared button if this object disabled while showing
+        if (GrabItem.Button != null && GrabItem.Button.gameObject.activeSelf)
+        {
+            GrabItem.Button.gameObject.SetActive(false);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
 
+        // don't allow interaction if the game run is finished
+        if (GameEngine.IsGameOver) return;
+
         playerInside = true;
         playerTransform = other.transform;
         playerHeldTea = other.GetComponentInChildren<HeldTea>();
-        ShowEButton(true);
+        UpdateButtonVisibility();
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -54,13 +66,23 @@ public class CustomerServeInteract : MonoBehaviour
         ShowEButton(false);
     }
 
+    void UpdateButtonVisibility()
+    {
+        // Only show the button if the frog's order has been taken
+        bool shouldShow = playerInside && frogAI.orderTaken && !GameEngine.IsGameOver;
+
+        ShowEButton(shouldShow);
+    }
+
     void Update()
     {
         if (!playerInside) return;
         if (GrabItem.Button == null) return; // no shared button assigned
         if (playerTransform == null) return;
+        if (GameEngine.IsGameOver) return; // block interaction if game over
 
         // keep button positioned above frog (in case frog moves)
+        UpdateButtonVisibility();
         PositionButton();
 
         // press to interact
@@ -73,6 +95,8 @@ public class CustomerServeInteract : MonoBehaviour
     void ShowEButton(bool show)
     {
         if (GrabItem.Button == null) return;
+        // hide if game over or engine not started
+        if (GameEngine.IsGameOver) show = false;
         GrabItem.Button.gameObject.SetActive(show);
         if (show) PositionButton();
     }
@@ -95,6 +119,7 @@ public class CustomerServeInteract : MonoBehaviour
             return;
         }
 
+        // Note: HeldTea.teaType check kept as original; adjust if HeldTea uses different semantics
         bool holdingDrink = (playerHeldTea.teaType != null);
 
         if (!holdingDrink)
@@ -117,32 +142,40 @@ public class CustomerServeInteract : MonoBehaviour
         OrderData playerOrder = playerHeldTea.GetOrderData();
         OrderData needed = co.order;
 
-        //Debug.Log($"[CustomerServeInteract] Player offers '{playerOrder}' for frog needing '{needed}'.");
-
         if (needed.Matches(playerOrder))
         {
-            // success: call ForceServeAndLeave if available otherwise Serve()
+            // success: serve & make frog leave
             var method = frogAI.GetType().GetMethod("ForceServeAndLeave");
             if (method != null) method.Invoke(frogAI, null);
             else frogAI.Serve();
 
+            // Clear player's held tea
             playerHeldTea.ClearEverything();
             ShowEButton(false);
+
+            // Notify GameEngine that a customer has been served.
+            // Use instance if available; fallback to direct call if you made it static.
+            if (GameEngine.Instance != null)
+                GameEngine.Instance.RegisterCustomerServed();
+            else
+                GameEngine.Instance.RegisterCustomerServed(); // harmless if method is static; remove if not applicable
         }
         else
         {
-            // wrong order: you can show feedback here
-            //Debug.Log("[CustomerServeInteract] Wrong order delivered.");
-            // optional: play sound / UI feedback
+            // wrong order: could give feedback here
+            // e.g. play fail sound, flash UI, etc.
         }
     }
 
-    void OnDisable()
+    // Called when GameEngine requests a reset (end of day / scene reset)
+    private void HandleDayStarted(int dayIndex)
     {
-        // hide shared button if this object disabled while showing
-        if (GrabItem.Button != null && GrabItem.Button.gameObject.activeSelf)
-        {
+        ShowEButton(false);
+        playerInside = false;
+        playerTransform = null;
+        playerHeldTea = null;
+
+        if (GrabItem.Button != null)
             GrabItem.Button.gameObject.SetActive(false);
-        }
     }
 }

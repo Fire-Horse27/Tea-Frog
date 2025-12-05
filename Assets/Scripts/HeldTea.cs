@@ -236,4 +236,20 @@ public class HeldTea : MonoBehaviour
                 break;
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        // clear anything the player might be holding from a previous run/day
+        ClearEverything();
+    }
 }

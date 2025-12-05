@@ -41,4 +41,21 @@ public class EButtonRegistrar : MonoBehaviour
             sr.sprite = isPressed ? pressedSprite : unpressedSprite;
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        gameObject.SetActive(false);
+        lastPressed = false;
+        if (sr != null && unpressedSprite != null) sr.sprite = unpressedSprite;
+    }
 }

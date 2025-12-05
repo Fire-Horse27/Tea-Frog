@@ -22,4 +22,20 @@ public class KettleFunction : MonoBehaviour
         targetRenderer.sprite = sprites[currentIndex];
         return;
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        // set kettle to initial sprite/state for the day
+        Fill(); // sets currentIndex = 0 and updates sprite
+    }
 }

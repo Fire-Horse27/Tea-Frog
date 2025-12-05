@@ -199,4 +199,20 @@ public class OrderPopupUI : MonoBehaviour
             return coldTeaSprites[0];
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        if (panelRoot != null) panelRoot.SetActive(false);
+        panelVisible = false;
+    }
 }

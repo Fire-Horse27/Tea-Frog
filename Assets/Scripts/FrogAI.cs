@@ -70,6 +70,7 @@ public class FrogAI : MonoBehaviour
 
     void OnEnable()
     {
+        GameEngine.OnDayStarted += HandleDayStarted;
         path.Clear();
         pathIndex = 0;
         reachedCounter = false;
@@ -104,6 +105,13 @@ public class FrogAI : MonoBehaviour
             if (counterPoint != null)
                 MoveTo(counterPoint.position);
         }
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        RemoveFromQueue(this); // safe no-op if not queued
+        gameObject.SetActive(true);
+        InitializeNew();
     }
 
     #region Queue management (sharedQueue)
@@ -488,11 +496,23 @@ public class FrogAI : MonoBehaviour
             while (path != null && pathIndex < path.Count) yield return null;
         }
 
+        // If the customer is leaving without having been served, end the day
+        // (same effect as the timer running out). Guard against duplicate calls
+        // if the game is already over.
+        if (!served && !GameEngine.IsGameOver)
+        {
+            if (GameEngine.Instance != null)
+                GameEngine.Instance.EndRunFailure("You (Ran out of time, Lost a customer)");
+            else
+                Debug.LogWarning("[FrogAI] GameEngine instance not found — cannot force end run.", this);
+        }
+
         gameObject.SetActive(false);
     }
 
     void OnDisable()
     {
+        GameEngine.OnDayStarted -= HandleDayStarted;
         if (assignedSeat != null)
         {
             CafeManager.Instance.NotifySeatFreed(assignedSeat);

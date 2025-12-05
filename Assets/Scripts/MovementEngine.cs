@@ -263,4 +263,21 @@ public class MovementEngine : MonoBehaviour
                 spriteRenderer.flipX = dir.x > 0f;
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        // stop any lingering activity and reset internal flags
+        StopAllCoroutines();
+        isLeaping = false;
+    }
 }

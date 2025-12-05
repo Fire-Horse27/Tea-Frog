@@ -1201,8 +1201,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 0
-  defaultIcedTea: 0
 --- !u!212 &138852075
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2815,6 +2813,7 @@ GameObject:
   - component: {fileID: 327010848}
   - component: {fileID: 327010847}
   - component: {fileID: 327010846}
+  - component: {fileID: 327010850}
   m_Layer: 5
   m_Name: Game over canvas
   m_TagString: Untagged
@@ -2905,6 +2904,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &327010850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327010845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1eb2b80934c7d64c81f24b52f06e941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameOverMenu
+  gameOverPanel: {fileID: 1452730920}
+  messageText: {fileID: 217413526}
 --- !u!1 &334690751
 GameObject:
   m_ObjectHideFlags: 0
@@ -3656,9 +3669,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &486383247
 GameObject:
   m_ObjectHideFlags: 0
@@ -3859,8 +3874,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!1 &495701410
 GameObject:
   m_ObjectHideFlags: 0
@@ -4350,7 +4363,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameEngine
   numberOfDays: 3
   customersPerDay: 040000000500000006000000
-  useSceneReloadForReset: 1
 --- !u!1 &536088148
 GameObject:
   m_ObjectHideFlags: 0
@@ -4463,9 +4475,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &550182488
 GameObject:
   m_ObjectHideFlags: 0
@@ -4860,8 +4874,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!1 &588906574
 GameObject:
   m_ObjectHideFlags: 0
@@ -5000,7 +5012,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4b4b09f444b4c0246b753060b9b7e43f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.49
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5581,7 +5593,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1452730924}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
         m_MethodName: TitleScreen
         m_Mode: 1
@@ -5743,9 +5755,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &762970363
 GameObject:
   m_ObjectHideFlags: 0
@@ -6295,9 +6309,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &812514697
 GameObject:
   m_ObjectHideFlags: 0
@@ -6636,8 +6652,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 0
-  defaultIcedTea: 0
 --- !u!1 &827703305
 GameObject:
   m_ObjectHideFlags: 0
@@ -8135,7 +8149,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1452730924}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GameOverMenu, Assembly-CSharp
         m_MethodName: RestartGame
         m_Mode: 1
@@ -9041,8 +9055,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 0
-  defaultIcedTea: 0
 --- !u!1 &1001192194
 GameObject:
   m_ObjectHideFlags: 0
@@ -9660,9 +9672,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &1044201865
 GameObject:
   m_ObjectHideFlags: 0
@@ -9863,8 +9877,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!61 &1095497735
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11112,8 +11124,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 0
-  defaultIcedTea: 0
 --- !u!212 &1185035126
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11387,8 +11397,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!1 &1216533367
 GameObject:
   m_ObjectHideFlags: 0
@@ -11844,9 +11852,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &1333785290
 GameObject:
   m_ObjectHideFlags: 0
@@ -12197,8 +12207,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!1 &1349899362
 GameObject:
   m_ObjectHideFlags: 0
@@ -14223,7 +14231,6 @@ GameObject:
   - component: {fileID: 1452730921}
   - component: {fileID: 1452730923}
   - component: {fileID: 1452730922}
-  - component: {fileID: 1452730924}
   m_Layer: 5
   m_Name: gameover
   m_TagString: Untagged
@@ -14291,21 +14298,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1452730920}
   m_CullTransparentMesh: 1
---- !u!114 &1452730924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1452730920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d201e46e8a1e6f54cadeaf372f4eabd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameOverMenu
-  timer: {fileID: 1876007257}
-  titlePanel: {fileID: 0}
-  infoPanelController: {fileID: 0}
 --- !u!1 &1480685076
 GameObject:
   m_ObjectHideFlags: 0
@@ -17063,8 +17055,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!1 &1687821732
 GameObject:
   m_ObjectHideFlags: 0
@@ -17470,10 +17460,10 @@ MonoBehaviour:
   windows:
   - {fileID: 1324360072}
   - {fileID: 707857876}
-  - {fileID: 478478495}
-  - {fileID: 1797526548}
   - {fileID: 1036419616}
   - {fileID: 536088149}
+  - {fileID: 478478495}
+  - {fileID: 1797526548}
   - {fileID: 780370305}
   - {fileID: 2005449560}
   daySky:
@@ -17490,9 +17480,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 1068614902, guid: f9836de29fc7cf548bd15018d6bbe71a, type: 3}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 100
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!4 &1763187521
 Transform:
   m_ObjectHideFlags: 0
@@ -17545,8 +17537,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 0
-  defaultIcedTea: 0
 --- !u!61 &1770551561
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17928,9 +17918,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &1806184606
 GameObject:
   m_ObjectHideFlags: 0
@@ -17968,8 +17960,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 2
-  defaultIcedTea: 1
 --- !u!61 &1806184608
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -19269,8 +19259,6 @@ MonoBehaviour:
   promptOffsetY: 0.5
   kettle: {fileID: 0}
   showingPrompt: 0
-  defaultHotTea: 0
-  defaultIcedTea: 0
 --- !u!1 &1960246946
 GameObject:
   m_ObjectHideFlags: 0
@@ -19698,9 +19686,11 @@ MonoBehaviour:
   clearNightSprite: {fileID: 0}
   timer: {fileID: 1876007257}
   cloudSpeed: 1
-  dayLength: 30
-  triggerCooldown: 0.5
-  triggerEpsilon: 0.05
+  referenceY: 0
+  animateOverride: -1
+  rowIndexOverride: -1
+  manualIndexOffset: 0
+  animationOffsetSeconds: 0
 --- !u!1 &2017191337
 GameObject:
   m_ObjectHideFlags: 0

@@ -48,4 +48,20 @@ public class AreaSoundTrigger : MonoBehaviour
             //Debug.Log("Player exited the sound trigger area.");
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        isInArea = false;
+        // audioSource is obtained in Start — no need to re-get it here.
+    }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Cafe manager that coordinates seats and a reserved queue.
@@ -32,6 +33,34 @@ public class CafeManager : MonoBehaviour
             queueOccupant = new FrogAI[queuePoints.Length];
         else
             queueOccupant = new FrogAI[0];
+    }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        // Day initialization (single canonical place)
+        if (queuePoints != null && queuePoints.Length > 0)
+            queueOccupant = new FrogAI[queuePoints.Length];
+        else
+            queueOccupant = new FrogAI[0];
+
+        counterList?.Clear();
+
+        if (seats != null)
+        {
+            foreach (var s in seats) s?.Free();
+        }
+
+        Debug.Log($"[CafeManager] Day {dayIndex} started - initialized.");
     }
 
     #region Queue API

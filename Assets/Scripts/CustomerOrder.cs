@@ -19,26 +19,70 @@ public class CustomerOrder : MonoBehaviour
     {
         order = new OrderData();
 
-        // Randomly pick a cup
-        order.cupType = (Random.value < 0.5f) ? CupType.Tea : CupType.Glass;
+        int day = GameEngine.CurrentDay; // <--- USE GAME ENGINE
 
-        // Pick one of the four tea colors
-        // Pick one of the four teas, skipping Empty
-        TeaType[] possibleTeas = { TeaType.Red, TeaType.Green, TeaType.Black, TeaType.Blue };
-        order.teaType = possibleTeas[Random.Range(0, possibleTeas.Length)];
+        // -------------------------
+        // DAY 1 – ONLY TEA, NO ADDITIONS
+        // -------------------------
+        if (day == 1)
+        {
+            order.cupType = CupType.Tea;
 
-        //order.teaType = (TeaType)Random.Range(0, 4); // 0=Red, 1=Green, 2=Black, 3=Blue
+            TeaType[] teas = { TeaType.Red, TeaType.Green, TeaType.Black, TeaType.Blue };
+            order.teaType = teas[Random.Range(0, teas.Length)];
 
-        // Extras
-        order.milk = (Random.value < chanceMilk);
-        order.honey = (Random.value < chanceHoney);
-        order.ice = (Random.value < chanceIce);
+            order.milk = false;
+            order.honey = false;
+            order.ice = false;
+            return;
+        }
 
-        // Logical cleanup
-        if (order.ice && order.cupType == CupType.Tea)
-            order.ice = false; // no ice in mugs
-        if (order.ice && order.milk)
-            order.milk = false; // iced + milk conflict
+        // -------------------------
+        // DAY 2 – TEA ONLY, ADD MILK/HONEY, NO ICE
+        // -------------------------
+        if (day == 2)
+        {
+            order.cupType = CupType.Tea;
+
+            TeaType[] teas = { TeaType.Red, TeaType.Green, TeaType.Black, TeaType.Blue };
+            order.teaType = teas[Random.Range(0, teas.Length)];
+
+            order.milk = (Random.value < chanceMilk);
+            order.honey = (Random.value < chanceHoney);
+            order.ice = false; // no ice on day 2
+            return;
+        }
+
+        // -------------------------
+        // DAY 3 – FULL SYSTEM: GLASS, ICE, ADDITIONS
+        // -------------------------
+        if (day == 3)
+        {
+            // Random cup
+            order.cupType = (Random.value < 0.5f) ? CupType.Tea : CupType.Glass;
+
+            // Random tea
+            TeaType[] teas = { TeaType.Red, TeaType.Green, TeaType.Black, TeaType.Blue };
+            order.teaType = teas[Random.Range(0, teas.Length)];
+
+            // Extras
+            order.milk = (Random.value < chanceMilk);
+            order.honey = (Random.value < chanceHoney);
+            order.ice = (Random.value < chanceIce);
+
+            // Logical cleanup
+            if (order.ice && order.cupType == CupType.Tea)
+                order.ice = false;
+
+            return;
+        }
+
+        // Fallback if something unexpected happens
+        order.cupType = CupType.Tea;
+        order.teaType = TeaType.Red;
+        order.milk = false;
+        order.honey = false;
+        order.ice = false;
     }
 
     public string GetOrderString() => order.ToString();

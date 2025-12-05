@@ -11,9 +11,6 @@ public class GameEngine : MonoBehaviour
     [SerializeField, Tooltip("Customers required to finish each day. Length should match numberOfDays.")]
     private int[] customersPerDay = new int[] { 5, 7, 10 };
 
-    [SerializeField, Tooltip("If true, the scene will be reloaded when resetting. Otherwise OnReset is fired and systems should reset themselves.")]
-    private bool useSceneReloadForReset = false;
-
     // Public static so other scripts can directly read the current day (1-based). 0 before game start.
     public static int CurrentDay { get; private set; } = 0;
 
@@ -29,6 +26,10 @@ public class GameEngine : MonoBehaviour
     public static event Action<int, int, int> OnCustomerServedChanged;
     // fired when a reset is requested (before scene reload if used)
     public static event Action OnResetAll;
+
+    // fired when the run ends (win or loss). string = displayed message
+    public static event Action<string> OnGameOver;
+    public static string GameOverMessage { get; private set; } = "";
 
     // internal state for this run
     private int customersServedThisDay = 0;
@@ -71,17 +72,6 @@ public class GameEngine : MonoBehaviour
         ResetGameState();
     }
 
-    private void Start()
-    {
-        // Begin first day automatically
-        StartNextDay();
-    }
-
-    private void Update()
-    {
-        // No per-frame logic required for core engine here
-    }
-
     /// <summary>
     /// Call this when a customer is successfully served.
     /// </summary>
@@ -107,10 +97,13 @@ public class GameEngine : MonoBehaviour
 
         if (CurrentDay > numberOfDays)
         {
-            // completed all days
+            // completed all days -> player won the run
             IsGameOver = true;
-            Debug.Log("Game over: all days completed.");
-            // You might want to fire an event here if needed
+            GameOverMessage = "You Win!";
+            Debug.Log("Game over: all days completed. Player wins.");
+            OnGameOver?.Invoke(GameOverMessage);
+            // also trigger reset so UI/system can clear if needed
+            RequestResetAll();
             return;
         }
 
@@ -143,12 +136,6 @@ public class GameEngine : MonoBehaviour
     {
         Debug.Log("Requesting reset of all systems.");
         OnResetAll?.Invoke();
-
-        if (useSceneReloadForReset)
-        {
-            // reload scene to ensure clean state
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
     }
 
     /// <summary>
@@ -177,5 +164,30 @@ public class GameEngine : MonoBehaviour
     {
         if (CurrentDay > 0 && !IsGameOver)
             EndCurrentDay();
+    }
+
+    /// <summary>
+    /// Immediately end the run as a failure with a message (eg. timer ran out or unserved customer).
+    /// </summary>
+    public void EndRunFailure(string message)
+    {
+        if (IsGameOver) return;
+        IsGameOver = true;
+        GameOverMessage = message ?? "You Lost";
+        Debug.Log($"Game over (failure): {GameOverMessage}");
+        OnGameOver?.Invoke(GameOverMessage);
+
+        // Ask systems to reset / cleanup. This also allows UI to show proper panels.
+        RequestResetAll();
+    }
+
+    /// <summary>
+    /// Begins the full game run manually (used by Menu / Info Panels).
+    /// Resets the game state and starts Day 1.
+    /// </summary>
+    public void StartRun()
+    {
+        ResetGameState();   // ensure a clean start
+        StartNextDay();     // kicks off Day 1 and triggers OnDayStarted
     }
 }

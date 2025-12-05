@@ -91,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnEnable()
     {
+        GameEngine.OnDayStarted += HandleDayStarted;
         if (moveAction != null && moveAction.action != null)
         {
             moveAction.action.performed += OnMovePerformed;
@@ -104,6 +105,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnDisable()
     {
+        GameEngine.OnDayStarted -= HandleDayStarted;
         if (moveAction != null && moveAction.action != null)
         {
             moveAction.action.performed -= OnMovePerformed;
@@ -119,6 +121,31 @@ public class PlayerMovement : MonoBehaviour
             StopCoroutine(spriteCoroutine);
             spriteCoroutine = null;
         }
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        // Stop any running sprite coroutine and input loops
+        if (spriteCoroutine != null)
+        {
+            StopCoroutine(spriteCoroutine);
+            spriteCoroutine = null;
+        }
+
+        holdLoopRunning = false;
+        heldDir = Vector2.zero;
+        queuedDir = Vector2.zero;
+        queuedPressStartTime = 0f;
+        pressStartTime = 0f;
+        inputHeld = false;
+        prevInputHeld = false;
+        lastRawInput = Vector2.zero;
+        lastLeapDir = Vector2.zero;
+        leapCooldownEndTime = 0f;
+        heldThroughLeap = false;
+
+        // Optionally set idle sprite
+        SetSpriteForState("idle", Vector2.zero);
     }
 
     // ---------------- Input handlers ----------------

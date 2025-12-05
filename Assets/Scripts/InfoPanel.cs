@@ -11,14 +11,13 @@ public class InfoPanelController : MonoBehaviour
     public bool useLeftMouseToAdvance = true;
 
     [Header("Timer")]
-    public GameTimer gameTimer;                // assign your GameTimer here
+    public GameTimer gameTimer;                // assign your GameTimer here (optional)
 
     private int index = 0;
     private bool visible = false;
 
     void Start()
     {
-        // Hide all images initially
         HideAllImages();
     }
 
@@ -28,7 +27,7 @@ public class InfoPanelController : MonoBehaviour
         if (Input.GetKeyDown(toggleKey))
         {
             if (!visible)
-                ShowPanel();
+                OpenPanel();   // always reset to first image and pause timer
             else
                 PrevImage();
         }
@@ -40,13 +39,9 @@ public class InfoPanelController : MonoBehaviour
         }
     }
 
-    // Public entrypoint so Menu (or any other script) can open the info panel
+    // Public entrypoint so Menu (or any other script) can open the info panel.
+    // This always resets to first image and pauses the timer.
     public void OpenPanel()
-    {
-        ShowPanel();
-    }
-
-    private void ShowPanel()
     {
         if (images == null || images.Length == 0)
         {
@@ -55,7 +50,7 @@ public class InfoPanelController : MonoBehaviour
         }
 
         visible = true;
-        index = 0;                // show first image when opening
+        index = 0;                // always start at first image
         UpdateVisibleImages();
         PauseTimer();
     }
@@ -64,6 +59,15 @@ public class InfoPanelController : MonoBehaviour
     {
         visible = false;
         HideAllImages();
+
+        // If the game hasn't started yet, start the run and do NOT resume the timer:
+        if (GameEngine.Instance != null && GameEngine.CurrentDay == 0)
+        {
+            GameEngine.Instance.StartRun();
+            return;
+        }
+
+        // Otherwise (in-game) resume the timer
         ResumeTimer();
     }
 
@@ -78,7 +82,7 @@ public class InfoPanelController : MonoBehaviour
         }
         else
         {
-            // Passed the last image -> close and resume timer
+            // Passed the last image -> close and resume/start game as appropriate
             ClosePanel();
         }
     }
@@ -94,9 +98,7 @@ public class InfoPanelController : MonoBehaviour
         }
         else
         {
-            // At first image and Q pressed: currently do nothing.
-            // If you'd prefer to close the panel here, uncomment:
-            // ClosePanel();
+            // At first image and Q pressed while panel visible: do nothing (stay open).
         }
     }
 
@@ -120,8 +122,12 @@ public class InfoPanelController : MonoBehaviour
     {
         if (gameTimer == null)
         {
-            Debug.LogWarning("[InfoPanelController] GameTimer not assigned; cannot pause.");
-            return;
+            gameTimer = FindObjectOfType<GameTimer>();
+            if (gameTimer == null)
+            {
+                Debug.LogWarning("[InfoPanelController] GameTimer not assigned; cannot pause.");
+                return;
+            }
         }
         gameTimer.PauseTimer();
     }
@@ -130,8 +136,12 @@ public class InfoPanelController : MonoBehaviour
     {
         if (gameTimer == null)
         {
-            Debug.LogWarning("[InfoPanelController] GameTimer not assigned; cannot resume.");
-            return;
+            gameTimer = FindObjectOfType<GameTimer>();
+            if (gameTimer == null)
+            {
+                Debug.LogWarning("[InfoPanelController] GameTimer not assigned; cannot resume.");
+                return;
+            }
         }
         gameTimer.ResumeTimer();
     }

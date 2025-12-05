@@ -16,17 +16,15 @@ public class Menu : MonoBehaviour
 
     public void StartGame()
     {
-        // Start game normally
-        timer.TimerStart();
-
-        // Immediately open the info panel after starting
+        // Open the info panels; the InfoPanelController will start the GameEngine when the player finishes.
         if (infoPanelController != null)
         {
             infoPanelController.OpenPanel();
+            titlePanel.SetActive(false);
         }
         else
         {
-            Debug.LogWarning("[Menu] No InfoPanelController assigned!");
+            Debug.LogWarning("[Menu] No InfoPanelController assigned. Starting game directly.");
         }
     }
 

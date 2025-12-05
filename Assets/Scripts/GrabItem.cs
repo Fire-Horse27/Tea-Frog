@@ -19,10 +19,6 @@ public class GrabItem : MonoBehaviour
     public KettleFunction kettle;
     public bool showingPrompt;
 
-    // sensible defaults when emulating Hot/Water behavior
-    public TeaType defaultHotTea = TeaType.Black;
-    public TeaType defaultIcedTea = TeaType.Green;
-
     private List<SpriteRenderer> promptRenderers = new List<SpriteRenderer>();
 
     void Awake()
@@ -108,4 +104,22 @@ public class GrabItem : MonoBehaviour
             heldTea.SetHeld(itemID);
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        foreach (var sr in promptRenderers) if (sr != null) sr.enabled = true;
+        if (Button != null && Button.gameObject != null) Button.gameObject.SetActive(false);
+        showingPrompt = false;
+    }
+
 }

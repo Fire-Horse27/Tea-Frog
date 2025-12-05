@@ -77,4 +77,22 @@ public class Cashregister : MonoBehaviour
             }
         }
     }
+
+    void OnEnable()
+    {
+        GameEngine.OnDayStarted += HandleDayStarted;
+    }
+
+    void OnDisable()
+    {
+        GameEngine.OnDayStarted -= HandleDayStarted;
+    }
+
+    private void HandleDayStarted(int dayIndex)
+    {
+        if (Button != null && Button.gameObject != null)
+            Button.gameObject.SetActive(false);
+
+        showingPrompt = false;
+    }
 }
