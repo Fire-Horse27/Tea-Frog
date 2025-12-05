@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -22,6 +23,8 @@ public class GrabItem : MonoBehaviour
     public TeaType defaultHotTea = TeaType.Black;
     public TeaType defaultIcedTea = TeaType.Green;
 
+    private List<SpriteRenderer> promptRenderers = new List<SpriteRenderer>();
+
     void Awake()
     {
         col = GetComponent<Collider2D>();
@@ -34,6 +37,17 @@ public class GrabItem : MonoBehaviour
 
         if (playerTransform != null)
             heldTea = playerTransform.GetComponentInChildren<HeldTea>();
+
+        foreach (Transform child in transform)
+        {
+            var sr = child.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                promptRenderers.Add(sr);
+        }
+
+        // Hide them at start (optional)
+        foreach (var sr in promptRenderers)
+            sr.enabled = true;
     }
 
     void Update()
@@ -43,6 +57,10 @@ public class GrabItem : MonoBehaviour
         if (playerInside)
         {
             showingPrompt = true;
+
+            foreach (var sr in promptRenderers)
+                sr.enabled = false;
+
             if (Button != null)
             {
                 Button.position = new Vector3(transform.position.x,
@@ -53,6 +71,9 @@ public class GrabItem : MonoBehaviour
         }
         else if (!playerInside && showingPrompt)
         {
+            foreach (var sr in promptRenderers)
+                sr.enabled = true;
+
             Button.gameObject.SetActive(false);
             showingPrompt = false;
         }

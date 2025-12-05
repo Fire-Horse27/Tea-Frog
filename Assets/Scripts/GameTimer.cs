@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using TMPro; // only needed if using TextMeshPro
+using TMPro;
+using System.Runtime.InteropServices.WindowsRuntime; // only needed if using TextMeshPro
 
 public class GameTimer : MonoBehaviour
 {
@@ -79,5 +80,6 @@ public class GameTimer : MonoBehaviour
     // Optional: public methods to control timer externally
     public void PauseTimer() => isRunning = false;
     public void ResumeTimer() => isRunning = true;
+    public bool GetTimer() { return isRunning; }
     public void AddTime(float amount) => currentTime += amount;
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
@@ -23,6 +24,8 @@ public class Spawner : MonoBehaviour
     private List<FrogAI> pool = new List<FrogAI>();
     private float spawnTimer;
     //private DoorAnimation door;
+
+    public GameTimer timer;
 
     void Start()
     {
@@ -53,11 +56,14 @@ public class Spawner : MonoBehaviour
 
     void Update()
     {
-        spawnTimer -= Time.deltaTime;
-        if (spawnTimer <= 0f)
+        if (timer.GetTimer())
         {
-            AttemptSpawn();
-            spawnTimer = spawnInterval;
+            spawnTimer -= Time.deltaTime;
+            if (spawnTimer <= 0f)
+            {
+                AttemptSpawn();
+                spawnTimer = spawnInterval;
+            }
         }
     }
 
