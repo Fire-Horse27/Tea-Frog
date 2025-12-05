@@ -64,8 +64,8 @@ public class DaylightSetter : MonoBehaviour
             lastTriggerTime = Time.time;
             AdvancePhase();
         }
-
-        cloudOffset += cloudSpeed * Time.deltaTime;
+        else { Debug.Log(lastTriggerTime + " " + t); }
+            cloudOffset += cloudSpeed * Time.deltaTime;
         int baseIndex = Mathf.FloorToInt(cloudOffset);
 
         for (int i = 0; i < windows.Length; i++)
